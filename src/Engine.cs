@@ -29,7 +29,7 @@ namespace AuroraProxy {
     byte[] buf=new byte[8192];int n;while((n=input.Read(buf,0,buf.Length))>0){if(output.Length+n>8*1024*1024)throw new InvalidDataException("Подписка больше 8 МиБ.");output.Write(buf,0,n);}
     string yaml=new UTF8Encoding(false,true).GetString(output.ToArray());return new DownloadResult(){Yaml=yaml,Usage=FormatUsage(res.Headers["subscription-userinfo"]),Name=SubscriptionNames.FromHeaders(res.Headers["profile-title"],res.Headers["Content-Disposition"])};
    }}catch(WebException ex){if(ex.Response!=null){using(var res=(HttpWebResponse)ex.Response){throw new IOException("Ошибка загрузки: HTTP "+(int)res.StatusCode+". Проверьте, не истекла ли подписка.",ex);}}
-    throw new IOException("Не удалось загрузить подписку. Проверьте сеть, ссылку и обновление TLS 1.2 для Win7; когда ядро запущено, можно попробовать «Загрузить через прокси».",ex);}
+    throw new IOException("Ошибка загрузки. Проверьте сеть, ссылку и TLS 1.2 в Win7; с запущенным ядром можно скачать через прокси.",ex);}
   }
   public static string FormatUsage(string header){if(String.IsNullOrWhiteSpace(header))return "Провайдер не передал данные о трафике";
    var d=new Dictionary<string,long>();foreach(Match m in Regex.Matches(header,@"(upload|download|total|expire)\s*=\s*(\d+)")){long n;if(Int64.TryParse(m.Groups[2].Value,out n))d[m.Groups[1].Value]=n;}
@@ -48,7 +48,7 @@ namespace AuroraProxy {
    using(var p=new Process()){p.StartInfo=new ProcessStartInfo(CoreFile,arguments){UseShellExecute=false,CreateNoWindow=true,RedirectStandardOutput=true,RedirectStandardError=true,StandardOutputEncoding=Encoding.UTF8,StandardErrorEncoding=Encoding.UTF8,WorkingDirectory=Store.Work};
     var lines=new StringBuilder();object gate=new object();DataReceivedEventHandler add=delegate(object o,DataReceivedEventArgs a){if(a.Data!=null)lock(gate)lines.AppendLine(a.Data);};
     p.OutputDataReceived+=add;p.ErrorDataReceived+=add;p.Start();p.BeginOutputReadLine();p.BeginErrorReadLine();
-    if(!p.WaitForExit(timeout)){try{p.Kill();p.WaitForExit();}catch{}throw new TimeoutException("Истекло время проверки конфигурации. Проверьте данные GEO, загрузку наборов правил и совместимость ядра с Win7.");}p.WaitForExit();
+    if(!p.WaitForExit(timeout)){try{p.Kill();p.WaitForExit();}catch{}throw new TimeoutException("Тайм-аут проверки конфига. Проверьте GEO-базы, правила и совместимость ядра с Win7.");}p.WaitForExit();
     if(p.ExitCode!=0)throw new InvalidDataException("Проверка конфигурации mihomo не пройдена:\n"+lines.ToString());return lines.ToString();
    }
   }
@@ -63,7 +63,7 @@ namespace AuroraProxy {
   }
   public void Start(Subscription profile){lock(sync){if(disposed)throw new ObjectDisposedException("Engine");
    if(Running)return;if(process!=null||job!=null)Stop();if(profile==null)throw new InvalidOperationException("Сначала импортируйте и выберите подписку.");
-   if(!File.Exists(CoreFile))throw new FileNotFoundException("Ядро mihomo не найдено. Поместите официальное ядро для Windows в core\\mihomo.exe или выберите файл ядра в настройках.");
+   if(!File.Exists(CoreFile))throw new FileNotFoundException("Ядро mihomo не найдено. Поместите core\\mihomo.exe или укажите файл в настройках.");
    string yaml=File.ReadAllText(Store.ProfilePath(profile));string runtime=Build(yaml);Validate(runtime);
    PortAvailable(Store.State.Port,Store.State.AllowLan);PortAvailable(Store.State.ApiPort);apiPort=Store.State.ApiPort;
    string path=Path.Combine(Store.Work,"config.yaml");Store.Atomic(path,runtime);
@@ -89,13 +89,13 @@ namespace AuroraProxy {
    try{using(var res=req.GetResponse())using(var reader=new StreamReader(res.GetResponseStream())){string s=reader.ReadToEnd();return String.IsNullOrWhiteSpace(s)?new Dictionary<string,object>():Store.Json.Deserialize<Dictionary<string,object>>(s);}}
    catch(WebException ex){if(ex.Response!=null)using(var res=ex.Response)using(var reader=new StreamReader(res.GetResponseStream())){throw new IOException("Ошибка запроса к интерфейсу управления: "+reader.ReadToEnd(),ex);}throw;}
   }
-  public string GlobalTarget(){var all=Api("GET","/proxies",null)["proxies"] as Dictionary<string,object>;string name="GLOBAL";var seen=new HashSet<string>();while(all!=null&&seen.Add(name)){object raw;if(!all.TryGetValue(name,out raw))break;var d=raw as Dictionary<string,object>;if(d==null)break;object next;if(d.TryGetValue("now",out next)&&next!=null&&!String.IsNullOrEmpty(next.ToString())){name=next.ToString();continue;}object type;string t=d.TryGetValue("type",out type)?Convert.ToString(type):"";if(t=="Direct"||t.StartsWith("Reject")||t=="Compatible"||t=="Pass"||t=="")break;return name;}throw new GlobalSelectionException("В GLOBAL не выбран прокси-выход (сейчас: "+name+"). Выберите доступный узел или группу в категории GLOBAL на странице «Узлы», затем включите глобальный режим.");}
+  public string GlobalTarget(){var all=Api("GET","/proxies",null)["proxies"] as Dictionary<string,object>;string name="GLOBAL";var seen=new HashSet<string>();while(all!=null&&seen.Add(name)){object raw;if(!all.TryGetValue(name,out raw))break;var d=raw as Dictionary<string,object>;if(d==null)break;object next;if(d.TryGetValue("now",out next)&&next!=null&&!String.IsNullOrEmpty(next.ToString())){name=next.ToString();continue;}object type;string t=d.TryGetValue("type",out type)?Convert.ToString(type):"";if(t=="Direct"||t.StartsWith("Reject")||t=="Compatible"||t=="Pass"||t=="")break;return name;}throw new GlobalSelectionException("В GLOBAL не выбран выход (сейчас: "+name+"). Выберите узел или группу в GLOBAL на вкладке «Узлы».");}
   public void ChangeMode(string mode){lock(sync){if(disposed)throw new ObjectDisposedException("Engine");if(mode!="rule"&&mode!="global"&&mode!="direct")throw new ArgumentException("Недопустимый режим маршрутизации.");string previous=Store.State.Mode;if(mode==previous)return;bool running=Running;if(running&&mode=="global")GlobalTarget();if(running)Api("PATCH","/configs",new Dictionary<string,object>{{"mode",mode}});try{Store.UpdateSettings(delegate(Settings settings){settings.Mode=mode;});}catch(Exception original){if(running)try{Api("PATCH","/configs",new Dictionary<string,object>{{"mode",previous}});}catch(Exception rollback){throw new IOException("Не удалось сохранить режим маршрутизации, восстановить прежний режим тоже не удалось: "+rollback.Message,original);}throw;}if(activeRuntime!=null)activeRuntime=Regex.Replace(activeRuntime,@"(?m)^mode: [^\r\n]*","mode: "+mode);}}
 
   public void ToggleSystemProxy(){lock(sync){if(disposed)throw new ObjectDisposedException("Engine");if(Proxy.Owned){Proxy.Restore();return;}if(!Running)throw new InvalidOperationException("Сначала запустите ядро.");if(Store.State.Mode=="global")GlobalTarget();Proxy.Enable(Store.State.Port);if(!Running){Proxy.Restore();throw new IOException("Ядро завершилось, системный прокси восстановлен.");}}}
   public void Stop(){lock(sync){Exception restoreError=null;try{Proxy.Restore();}catch(Exception ex){restoreError=ex;}
    var p=process;process=null;ActiveId=null;activeRuntime=null;Interlocked.Increment(ref generation);if(p!=null){try{if(!p.HasExited){p.Kill();p.WaitForExit(3000);}}catch(Exception ex){Emit("Остановка ядра: "+ex.Message);}p.Dispose();}if(job!=null){job.Dispose();job=null;}
-   if(restoreError!=null)throw new IOException("Не удалось восстановить системный прокси, запись для восстановления сохранена. Перезапустите клиент для восстановления или отключите прокси вручную в «Свойствах обозревателя» Windows.",restoreError);
+   if(restoreError!=null)throw new IOException("Не удалось восстановить системный прокси. Перезапустите клиент или выключите прокси в свойствах браузера.",restoreError);
   }}
   public void Dispose(){lock(sync){if(disposed)return;try{Stop();}finally{disposed=true;}}}
  }

@@ -70,14 +70,14 @@ namespace AuroraProxy {
     if(line[0]!=' '&&line[0]!='\t'){
      // YAML allows root sequence values with no indentation after a mapping key.
      if((t=="-"||line.StartsWith("- "))&&keys.Count>0){if(!skip)output.AppendLine(line);continue;}
-     Match m=Key.Match(line);if(!m.Success)throw new InvalidDataException("Используйте блочную YAML-конфигурацию Clash/mihomo. Исходные ссылки узлов, Base64, ключи слияния на корневом уровне и потоковый корневой объект пока не поддерживаются.");
+     Match m=Key.Match(line);if(!m.Success)throw new InvalidDataException("Нужен блочный YAML Clash/mihomo; ссылки узлов, Base64 и потоковый YAML не поддерживаются.");
      string k=m.Groups[1].Value+m.Groups[2].Value+m.Groups[3].Value;
      if(!keys.Add(k))throw new InvalidDataException("Конфигурация содержит повторяющееся поле верхнего уровня: "+k);
      skip=Owned.Contains(k);
     }
     if(!skip)output.AppendLine(line);
    }
-   if(!keys.Contains("proxies")&&!keys.Contains("proxy-providers")&&!keys.Contains("proxy-groups"))throw new InvalidDataException("Подписка не содержит proxies / proxy-providers / proxy-groups; выберите у провайдера формат подписки Clash или mihomo.");
+   if(!keys.Contains("proxies")&&!keys.Contains("proxy-providers")&&!keys.Contains("proxy-groups"))throw new InvalidDataException("В подписке нет proxies / proxy-providers / proxy-groups; нужен формат Clash / mihomo.");
    if(!keys.Contains("proxy-groups")){
     output.AppendLine("proxy-groups:\n  - name: AURORA\n    type: select\n    include-all: true\n    proxies:\n      - DIRECT");
    }
