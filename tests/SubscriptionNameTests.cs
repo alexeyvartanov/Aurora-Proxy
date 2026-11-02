@@ -49,9 +49,9 @@ class SubscriptionNameTests {
   Check(SubscriptionNames.Resolve("我的别名","服务商名称","https://example.test/sub")=="我的别名","manual names always win");
   Check(SubscriptionNames.Resolve("手动  别名","服务商名称",null)=="手动  别名","manual alias spacing remains unchanged");
   Check(SubscriptionNames.Resolve(null,"服务商名称","https://example.test/sub")=="服务商名称","detected name is used for automatic import");
-  Check(SubscriptionNames.Resolve(null,null,"https://example.test/private-secret?token=hidden")=="订阅 · example.test","fallback uses only host, never URL credentials or tokens");
-  Check(SubscriptionNames.Resolve(null,null,"https://user:password@example.test/sub")=="订阅 · example.test","fallback excludes URL user information");
-  Check(SubscriptionNames.Resolve(null,null,null)=="我的订阅","missing metadata still produces a usable name");
+  Check(SubscriptionNames.Resolve(null,null,"https://example.test/private-secret?token=hidden")=="Подписка · example.test","fallback uses only host, never URL credentials or tokens");
+  Check(SubscriptionNames.Resolve(null,null,"https://user:password@example.test/sub")=="Подписка · example.test","fallback excludes URL user information");
+  Check(SubscriptionNames.Resolve(null,null,null)=="Моя подписка","missing metadata still produces a usable name");
   var automatic=new Subscription{Name="旧名称",AutoName=true,Url="https://example.test/sub"};SubscriptionNames.ApplyDownloaded(automatic,new DownloadResult{Name="新名称"});Check(automatic.Name=="新名称","automatic update follows changed provider title");
   SubscriptionNames.ApplyDownloaded(automatic,new DownloadResult());Check(automatic.Name=="新名称","missing update metadata preserves an existing automatic name");
   var manual=new Subscription{Name="手动别名",Url=automatic.Url};SubscriptionNames.ApplyDownloaded(manual,new DownloadResult{Name="服务商新名称"});Check(manual.Name=="手动别名","updates do not rename manual or legacy profiles");

@@ -21,7 +21,7 @@ class SubscriptionNameUiTests {
   Exception failure=null;bool opened=false;
   using(var timer=new System.Windows.Forms.Timer{Interval=40}){
    timer.Tick+=delegate{var dialog=Application.OpenForms.Cast<Form>().OfType<SubscriptionDialog>().FirstOrDefault();if(dialog==null)return;timer.Stop();opened=true;
-    try{Field<TextBox>(dialog,"name").Text=name;Field<TextBox>(dialog,"url").Text=url;dialog.Controls.OfType<SoftButton>().First(b=>b.Text=="导入订阅"||b.Text=="保存修改").PerformClick();}
+    try{Field<TextBox>(dialog,"name").Text=name;Field<TextBox>(dialog,"url").Text=url;dialog.Controls.OfType<SoftButton>().First(b=>b.Text=="Добавить"||b.Text=="Сохранить").PerformClick();}
     catch(Exception ex){failure=ex;dialog.DialogResult=DialogResult.Cancel;dialog.Close();}
    };
    timer.Start();Invoke(form,method);if(failure!=null)throw failure;Check(opened,"actual subscription dialog is used");Wait(form);
