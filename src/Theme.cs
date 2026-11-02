@@ -139,7 +139,7 @@ namespace AuroraProxy {
    public ButtonAccessibility(SoftButton button):base(button){owner=button;}
    public override AccessibleRole Role {get{return AccessibleRole.PushButton;}}
    public override string Name {get{return owner.AccessibleName??owner.Text.Replace("&","");}set{owner.AccessibleName=value;}}
-   public override string DefaultAction {get{return "按下";}}
+   public override string DefaultAction {get{return "Нажать";}}
    public override AccessibleStates State {get{return base.State|(owner.PressTarget>0?AccessibleStates.Pressed:AccessibleStates.None)|(owner.isDefault?AccessibleStates.Default:AccessibleStates.None);}}
    public override void DoDefaultAction(){owner.PerformClick();}
   }

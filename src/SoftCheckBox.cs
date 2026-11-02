@@ -45,7 +45,7 @@ namespace AuroraProxy {
    public CheckAccessibility(SoftCheckBox control):base(control){owner=control;}
    public override AccessibleRole Role {get{return AccessibleRole.CheckButton;}}
    public override string Name {get{return owner.AccessibleName??owner.Text.Replace("&","");}set{owner.AccessibleName=value;}}
-   public override string DefaultAction {get{return owner.Checked?"取消勾选":"勾选";}}
+   public override string DefaultAction {get{return owner.Checked?"Снять отметку":"Отметить";}}
    public override AccessibleStates State {get{return base.State|(owner.CheckState==CheckState.Indeterminate?AccessibleStates.Mixed:owner.Checked?AccessibleStates.Checked:AccessibleStates.None);}}
    public override void DoDefaultAction(){if(owner.IsDisposed||!owner.CanSelect)return;owner.Focus();owner.OnClick(EventArgs.Empty);}
   }

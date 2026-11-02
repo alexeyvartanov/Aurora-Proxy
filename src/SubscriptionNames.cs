@@ -55,8 +55,8 @@ namespace AuroraProxy {
   public static string Resolve(string manual,string suggested,string url,string previous=null){
    if(!String.IsNullOrWhiteSpace(manual))return manual.Trim();
    string name=Clean(suggested)??Clean(previous);if(name!=null)return name;
-   Uri uri;if(Uri.TryCreate(url,UriKind.Absolute,out uri)&&(uri.Scheme=="https"||uri.Scheme=="http"))return Clean("订阅 · "+uri.Host);
-   return "我的订阅";
+   Uri uri;if(Uri.TryCreate(url,UriKind.Absolute,out uri)&&(uri.Scheme=="https"||uri.Scheme=="http"))return Clean("Подписка · "+uri.Host);
+   return "Моя подписка";
   }
   public static void ApplyDownloaded(Subscription profile,DownloadResult result){if(profile.AutoName)profile.Name=Resolve(null,result.Name,profile.Url,profile.Name);}
  }

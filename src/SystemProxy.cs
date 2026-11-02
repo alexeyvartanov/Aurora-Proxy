@@ -21,7 +21,7 @@ namespace AuroraProxy {
    int stride=Marshal.SizeOf(typeof(Option));IntPtr buf=Marshal.AllocHGlobal(stride*4);
    try{for(int i=0;i<4;i++)Marshal.StructureToPtr(new Option(){Kind=i+1},IntPtr.Add(buf,stride*i),false);
     var list=new OptionList(){Size=Marshal.SizeOf(typeof(OptionList)),Count=4,Options=buf};int length=list.Size;
-    if(!Query(IntPtr.Zero,75,ref list,ref length))throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error(),"无法读取 Windows 系统代理。");
+    if(!Query(IntPtr.Zero,75,ref list,ref length))throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error(),"Не удалось прочитать системный прокси Windows.");
     var values=new Option[4];for(int i=0;i<4;i++)values[i]=(Option)Marshal.PtrToStructure(IntPtr.Add(buf,stride*i),typeof(Option));
     var s=new ProxySnapshot(){Flags=values[0].Data.Number,Server=Marshal.PtrToStringUni(values[1].Data.Text)??"",Bypass=Marshal.PtrToStringUni(values[2].Data.Text)??"",Pac=Marshal.PtrToStringUni(values[3].Data.Text)??""};
     for(int i=1;i<4;i++)if(values[i].Data.Text!=IntPtr.Zero)GlobalFree(values[i].Data.Text);return s;
@@ -32,16 +32,16 @@ namespace AuroraProxy {
    try{Marshal.StructureToPtr(new Option(){Kind=1,Data=new Value(){Number=s.Flags}},buf,false);
     for(int i=1;i<4;i++)Marshal.StructureToPtr(new Option(){Kind=i+1,Data=new Value(){Text=strings[i-1]}},IntPtr.Add(buf,stride*i),false);
     var list=new OptionList(){Size=Marshal.SizeOf(typeof(OptionList)),Count=4,Options=buf};
-    if(!Set(IntPtr.Zero,75,ref list,list.Size))throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error(),"无法修改 Windows 系统代理。");
+    if(!Set(IntPtr.Zero,75,ref list,list.Size))throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error(),"Не удалось изменить системный прокси Windows.");
     Notify(IntPtr.Zero,39,IntPtr.Zero,0);Notify(IntPtr.Zero,37,IntPtr.Zero,0);
    }finally{foreach(var p in strings)Marshal.FreeHGlobal(p);Marshal.FreeHGlobal(buf);}
   }
   static bool Same(ProxySnapshot a,ProxySnapshot b){return a.Flags==b.Flags&&a.Server==b.Server&&a.Bypass==b.Bypass&&a.Pac==b.Pac;}
-  public void Enable(int port){lock(gate){if(!Windows)throw new PlatformNotSupportedException("系统代理开关仅用于 Windows。");if(Owned)return;if(RecoveryPending)Restore();
+  public void Enable(int port){lock(gate){if(!Windows)throw new PlatformNotSupportedException("Переключение системного прокси доступно только в Windows.");if(Owned)return;if(RecoveryPending)Restore();
    var j=new ProxyJournal(){Before=Read(),Applied=new ProxySnapshot(){Flags=3,Server="127.0.0.1:"+port,Bypass="<local>;localhost;127.*;[::1]",Pac=""}};
    Store.Atomic(path,Store.Json.Serialize(j));try{Write(j.Applied);}catch{Restore();throw;}
   }}
-  public void Restore(){lock(gate){if(!RecoveryPending||!Windows)return;var j=Store.Json.Deserialize<ProxyJournal>(File.ReadAllText(path));if(j==null||j.Before==null||j.Applied==null)throw new InvalidDataException("系统代理恢复记录不完整，已保留原文件。");
+  public void Restore(){lock(gate){if(!RecoveryPending||!Windows)return;var j=Store.Json.Deserialize<ProxyJournal>(File.ReadAllText(path));if(j==null||j.Before==null||j.Applied==null)throw new InvalidDataException("Запись для восстановления системного прокси неполная, исходный файл сохранён.");
    // Never overwrite a proxy changed by the user or another application after us.
    if(Same(Read(),j.Applied))Write(j.Before);File.Delete(path);
   }}
