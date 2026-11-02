@@ -14,7 +14,7 @@ namespace ProxyCore
         {
             var spec = CoreRegistry.Of(kind);
             if (mode == ProxyMode.Rule && spec.NeedsGeoDat && !string.IsNullOrEmpty(coreDir) && !HasV2rayGeo(coreDir))
-                throw new ProxyCoreException("规则模式缺少 geoip.dat 或 geosite.dat，请先更新 " + spec.Name + " 内核数据。");
+                throw new ProxyCoreException("Для режима «Правила» нужны geoip.dat и geosite.dat, обновите данные ядра " + spec.Name + ".");
 
             switch (kind)
             {

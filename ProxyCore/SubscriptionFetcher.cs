@@ -36,11 +36,11 @@ namespace ProxyCore
         private static DownloadResult Download(string url, bool allowInsecure)
         {
             if (string.IsNullOrWhiteSpace(url))
-                throw new ProxyCoreException("订阅地址为空。");
+                throw new ProxyCoreException("Ссылка на подписку пуста.");
 
             if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
                 !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                throw new ProxyCoreException("订阅地址必须以 http:// 或 https:// 开头。");
+                throw new ProxyCoreException("Ссылка на подписку должна начинаться с http:// или https://.");
 
             try
             {
@@ -54,9 +54,9 @@ namespace ProxyCore
             catch (Exception ex)
             {
                 var hint = (ex is WebException && !allowInsecure)
-                    ? "（若该站点使用自签名证书，可在导入时勾选「跳过证书校验」）"
+                    ? " (если сайт использует самоподписанный сертификат, отметьте «Пропустить проверку TLS-сертификата»)"
                     : "";
-                throw new ProxyCoreException("订阅下载失败：" + ex.Message + hint);
+                throw new ProxyCoreException("Ошибка загрузки подписки: " + ex.Message + hint);
             }
         }
 
@@ -65,10 +65,10 @@ namespace ProxyCore
         {
             var result = Download(sub.Url, sub.AllowInsecureTls);
             if (string.IsNullOrWhiteSpace(sub.Name))
-                sub.Name = string.IsNullOrWhiteSpace(result.SuggestedName) ? "订阅" : result.SuggestedName;
+                sub.Name = string.IsNullOrWhiteSpace(result.SuggestedName) ? "Подписка" : result.SuggestedName;
             var nodes = SubscriptionParserFactory.Parse(sub, result.Raw);
             if (nodes == null || nodes.Count == 0)
-                throw new ProxyCoreException("订阅内容里没有解析出任何节点，请检查订阅地址或格式。");
+                throw new ProxyCoreException("В подписке не найдено ни одного узла, проверьте ссылку или формат.");
             sub.Nodes = nodes;
             sub.Updated = DateTime.Now;
             return sub;

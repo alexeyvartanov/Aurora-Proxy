@@ -15,7 +15,7 @@ namespace Win7Proxy
             {
                 if (!createdNew)
                 {
-                    MessageBox.Show("Win7Proxy 已在运行。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Win7Proxy уже запущен.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
                 Application.EnableVisualStyles();

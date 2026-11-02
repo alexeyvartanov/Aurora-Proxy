@@ -47,10 +47,10 @@ jobs:
 
           dl() { # dl <相对路径> <输出文件> <最小字节数>
             local rel="$1" out="$2" min="${3:-100000}"
-            for m in "https://gh-proxy.org/" "https://ghproxy.com/" "https://ghproxy.net/" "https://mirror.ghproxy.com/" ""; do
+            for m in "" "https://gh-proxy.org/" "https://ghproxy.com/" "https://ghproxy.net/" "https://mirror.ghproxy.com/"; do
               url="${m}https://github.com/${rel}"
               echo "  尝试: $url"
-              if curl -fsSL --max-time 300 -o "$out" "$url"; then
+              if curl -fsSL --max-time 60 -o "$out" "$url"; then
                 sz=$(stat -c%s "$out" 2>/dev/null || echo 0)
                 if [ "$sz" -ge "$min" ]; then echo "  OK: $out ($sz bytes)"; return 0; fi
                 echo "  尺寸异常($sz)，换下一个镜像"

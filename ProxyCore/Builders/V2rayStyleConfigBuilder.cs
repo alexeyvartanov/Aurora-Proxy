@@ -18,7 +18,7 @@ namespace ProxyCore
 
         public static XrayConfig Build(CoreSpec spec, Node node, ProxyMode mode, InboundOptions inbound)
         {
-            if (node == null) throw new ProxyCoreException("节点为空，无法生成配置。");
+            if (node == null) throw new ProxyCoreException("Узел пуст, невозможно создать конфигурацию.");
             inbound = inbound ?? InboundOptions.Default;
 
             var cfg = new XrayConfig
@@ -147,7 +147,7 @@ namespace ProxyCore
 
                 case NodeType.Hysteria2:
                     if (!spec.Hysteria2)
-                        throw new ProxyCoreException(spec.Name + " 不支持 Hysteria2 节点，请切换到 Xray 或 sing-box 内核。");
+                        throw new ProxyCoreException(spec.Name + " не поддерживает узлы Hysteria2, переключитесь на ядро Xray или sing-box.");
                     ob["protocol"] = "hysteria";
                     ob["settings"] = new JObject {
                         ["version"] = 2,
@@ -157,7 +157,7 @@ namespace ProxyCore
                     break;
 
                 default:
-                    throw new ProxyCoreException("不支持的节点类型: " + n.Type);
+                    throw new ProxyCoreException("Неподдерживаемый тип узла: " + n.Type);
             }
 
             ob["streamSettings"] = BuildStreamSettings(spec, n);
@@ -226,11 +226,11 @@ namespace ProxyCore
                     else if (plugin.IsObfs)
                     {
                         throw new ProxyCoreException(
-                            "Xray/V2Ray 不支持 simple-obfs（" + plugin.Name + "）混淆插件，请切换到 sing-box 内核，或改用不带插件的节点。");
+                            "Xray/V2Ray не поддерживает плагин обфускации simple-obfs (" + plugin.Name + "), переключитесь на ядро sing-box или используйте узел без плагина.");
                     }
                     else
                     {
-                        throw new ProxyCoreException("Xray/V2Ray 不支持的 Shadowsocks 插件：" + plugin.Name + "。");
+                        throw new ProxyCoreException("Неподдерживаемый плагин Shadowsocks для Xray/V2Ray: " + plugin.Name + ".");
                     }
                 }
             }

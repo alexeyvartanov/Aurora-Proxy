@@ -16,11 +16,11 @@ namespace ProxyCore
     {
         /// <summary>GitHub 镜像，依次尝试。空串表示直连。</summary>
         private static readonly string[] Mirrors = {
+            "",
             "https://gh-proxy.org/",
             "https://ghproxy.com/",
             "https://ghproxy.net/",
-            "https://mirror.ghproxy.com/",
-            ""
+            "https://mirror.ghproxy.com/"
         };
 
         static CoreDownloader()
@@ -36,7 +36,7 @@ namespace ProxyCore
             Directory.CreateDirectory(coreDir);
 
             var spec = CoreRegistry.Of(kind);
-            log("准备安装内核：" + spec.Name);
+            log("Подготовка к установке ядра: " + spec.Name);
 
             string zipRel;
             switch (kind)
@@ -48,10 +48,10 @@ namespace ProxyCore
                     var ver = FetchLatestSingboxVersion(log);
                     if (string.IsNullOrEmpty(ver))
                     {
-                        log("无法获取 sing-box 最新版本号，请手动下载后把 sing-box.exe 放进 core\\");
+                        log("Не удалось узнать последнюю версию sing-box, скачайте sing-box.exe вручную в папку core\\");
                         return false;
                     }
-                    log("sing-box 最新版本：" + ver);
+                    log("Последняя версия sing-box: " + ver);
                     zipRel = "SagerNet/sing-box/releases/download/v" + ver + "/sing-box-" + ver + "-windows-amd64.zip";
                     break;
                 default:
@@ -67,7 +67,7 @@ namespace ProxyCore
             var tmpZip = Path.Combine(Path.GetTempPath(), "win7proxy-" + spec.ProcessName + ".zip");
             if (!Download("https://github.com/" + zipRel, tmpZip, 500000, log))
             {
-                log("内核下载失败，已尝试全部镜像。");
+                log("Не удалось скачать ядро (испробованы все зеркала).");
                 return false;
             }
 
@@ -77,31 +77,31 @@ namespace ProxyCore
 
             try
             {
-                log("解压 " + Path.GetFileName(tmpZip));
+                log("Распаковка " + Path.GetFileName(tmpZip));
                 ZipFile.ExtractToDirectory(tmpZip, extractDir);
             }
             catch (Exception ex)
             {
-                log("解压失败：" + ex.Message);
+                log("Ошибка распаковки: " + ex.Message);
                 return false;
             }
 
             var found = FindFile(extractDir, spec.ExeName);
             if (found == null)
             {
-                log("压缩包里没找到 " + spec.ExeName);
+                log("В архиве не найден " + spec.ExeName);
                 return false;
             }
 
             var target = Path.Combine(coreDir, spec.ExeName);
             File.Copy(found, target, true);
-            log("已安装 " + spec.ExeName + "（" + new FileInfo(target).Length + " 字节）");
+            log("Установлен " + spec.ExeName + " (" + new FileInfo(target).Length + " байт)");
 
             // 附带的可执行文件（v2ray 需要 v2ctl.exe）
             if (kind == CoreKind.V2ray)
             {
                 var ctl = FindFile(extractDir, "v2ctl.exe");
-                if (ctl != null) { File.Copy(ctl, Path.Combine(coreDir, "v2ctl.exe"), true); log("已安装 v2ctl.exe"); }
+                if (ctl != null) { File.Copy(ctl, Path.Combine(coreDir, "v2ctl.exe"), true); log("Установлен v2ctl.exe"); }
             }
 
             // geo 数据：v2ray 系用 .dat；sing-box 用按标签拆分的 .srs 规则集
@@ -126,7 +126,7 @@ namespace ProxyCore
                          Path.Combine(coreDir, CoreConstants.GeoSiteFile), 100000, log);
             }
             if (!geoOk)
-                log("警告：地理规则数据未能全部更新（原有文件已保留）。规则模式可能无法分流，请稍后重试「更新内核」。");
+                log("Внимание: гео-правила обновились не полностью (старые файлы сохранены). Повторите «Обновить ядро» позже.");
 
             return true;
         }
@@ -151,7 +151,7 @@ namespace ProxyCore
                 }
                 catch (Exception ex)
                 {
-                    log?.Invoke("  版本查询失败(" + (prefix == "" ? "直连" : prefix) + ")：" + ex.Message);
+                    log?.Invoke("  Не удалось узнать версию (" + (prefix == "" ? "Напрямую" : prefix) + "): " + ex.Message);
                 }
             }
             return null;
@@ -170,7 +170,7 @@ namespace ProxyCore
             foreach (var m in Mirrors)
             {
                 var full = m + url;
-                log("尝试：" + full);
+                log("Попытка: " + full);
                 try
                 {
                     try { if (File.Exists(tmp)) File.Delete(tmp); } catch { }
@@ -183,19 +183,19 @@ namespace ProxyCore
                     if (sz >= minBytes)
                     {
                         ReplaceFile(tmp, outFile);
-                        log("  OK：" + Path.GetFileName(outFile) + "（" + sz + " 字节）");
+                        log("  ОК: " + Path.GetFileName(outFile) + " (" + sz + " байт)");
                         return true;
                     }
-                    log("  尺寸异常（" + sz + " 字节），换下一个镜像");
+                    log("  Неверный размер (" + sz + " байт), пробуем следующее зеркало");
                 }
                 catch (Exception ex)
                 {
-                    log("  失败：" + ex.Message);
+                    log("  Ошибка: " + ex.Message);
                 }
             }
 
             try { if (File.Exists(tmp)) File.Delete(tmp); } catch { }
-            log("全部镜像均失败：" + url);
+            log("Все зеркала недоступны: " + url);
             return false;
         }
 

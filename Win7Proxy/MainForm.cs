@@ -81,7 +81,7 @@ namespace Win7Proxy
             try { if (File.Exists(iconPath)) appIcon = new Icon(iconPath); }
             catch { appIcon = null; }
 
-            Text = "Win7Proxy " + AppVersion + "  ·  Windows 7 代理客户端";
+            Text = "Win7Proxy " + AppVersion + "  ·  Прокси-клиент для Windows 7";
             Icon = appIcon ?? SystemIcons.Application;
             Width = 860; Height = 600;
             StartPosition = FormStartPosition.CenterScreen;
@@ -138,27 +138,27 @@ namespace Win7Proxy
                 _toolPanel.Controls.Add(b);
                 return b;
             }
-            Btn("导入订阅", (s, e) => ImportSubscription());
-            Btn("添加节点", (s, e) => AddNode());
-            Btn("更新订阅", (s, e) => UpdateAllSubscriptions());
-            _testBtn = Btn("测试延迟", (s, e) => TestLatency());
-            Btn("全选", (s, e) => _grid.SelectAll());
-            Btn("删除选中", (s, e) => DeleteSelected());
-            Btn("启动", (s, e) => StartProxy(false), Color.FromArgb(46, 160, 67));
-            Btn("停止", (s, e) => StopProxy(), Color.FromArgb(208, 64, 64));
-            Btn("更新内核", (s, e) => UpdateCore());
+            Btn("Импорт подписки", (s, e) => ImportSubscription());
+            Btn("Добавить узел", (s, e) => AddNode());
+            Btn("Обновить подписки", (s, e) => UpdateAllSubscriptions());
+            _testBtn = Btn("Проверить пинг", (s, e) => TestLatency());
+            Btn("Выбрать все", (s, e) => _grid.SelectAll());
+            Btn("Удалить", (s, e) => DeleteSelected());
+            Btn("Старт", (s, e) => StartProxy(false), Color.FromArgb(46, 160, 67));
+            Btn("Стоп", (s, e) => StopProxy(), Color.FromArgb(208, 64, 64));
+            Btn("Обновить ядро", (s, e) => UpdateCore());
 
             var modeLabel = new Label
             {
-                Text = "模式:",
+                Text = "Режим:",
                 AutoSize = true,
                 Font = new Font("Segoe UI", 9F),
                 ForeColor = Color.FromArgb(80, 84, 92),
                 Margin = new Padding(14, 9, 2, 0)
             };
             _toolPanel.Controls.Add(modeLabel);
-            _mode = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 90, FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 9F) };
-            _mode.Items.AddRange(new[] { "全局", "规则", "直连" });
+            _mode = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 115, FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 9F) };
+            _mode.Items.AddRange(new[] { "Глобальный", "Правила", "Напрямую" });
             _mode.SelectedIndex = (int)_state.Mode;
             _mode.SelectedIndexChanged += (s, e) =>
             {
@@ -168,7 +168,7 @@ namespace Win7Proxy
                 // 结果"切到规则模式"其实还在全局。现在运行中切换会立刻重启内核。
                 if (_core != null && _currentNode != null)
                 {
-                    AppendLog("模式已切换为「" + _mode.Text + "」，正在重启内核...");
+                    AppendLog("Режим переключён на «" + _mode.Text + "», перезапуск ядра...");
                     StartProxy(true);
                 }
                 else
@@ -181,7 +181,7 @@ namespace Win7Proxy
             // 内核选择：不同内核支持的传输方式不同（例如 h2 只有 V2Ray / sing-box 还能用）
             var coreLabel = new Label
             {
-                Text = "内核:",
+                Text = "Ядро:",
                 AutoSize = true,
                 Font = new Font("Segoe UI", 9F),
                 ForeColor = Color.FromArgb(80, 84, 92),
@@ -196,7 +196,7 @@ namespace Win7Proxy
 
             var filterLabel = new Label
             {
-                Text = "订阅:",
+                Text = "Подписка:",
                 AutoSize = true,
                 Font = new Font("Segoe UI", 9F),
                 ForeColor = Color.FromArgb(80, 84, 92),
@@ -213,8 +213,8 @@ namespace Win7Proxy
             };
             _toolPanel.Controls.Add(_subFilter);
 
-            _lanBtn = Btn("局域网:" + (_state.AllowLan ? "开" : "关"), (s, e) => ToggleLan());
-            Btn("端口...", (s, e) => ChangePort());
+            _lanBtn = Btn("LAN: " + (_state.AllowLan ? "Вкл" : "Выкл"), (s, e) => ToggleLan());
+            Btn("Порт...", (s, e) => ChangePort());
             _spinTimer = new System.Windows.Forms.Timer { Interval = 120 };
             _spinTimer.Tick += (s, e) =>
             {
@@ -268,11 +268,11 @@ namespace Win7Proxy
             {
                 BackColor = Color.FromArgb(245, 248, 252)
             };
-            _grid.Columns.Add("remarks", "备注");
-            _grid.Columns.Add("type", "类型");
-            _grid.Columns.Add("addr", "地址");
-            _grid.Columns.Add("latency", "延迟");
-            _grid.Columns.Add("source", "来源");
+            _grid.Columns.Add("remarks", "Имя");
+            _grid.Columns.Add("type", "Тип");
+            _grid.Columns.Add("addr", "Адрес");
+            _grid.Columns.Add("latency", "Пинг");
+            _grid.Columns.Add("source", "Источник");
             _grid.Columns["remarks"].FillWeight = 36;
             _grid.Columns["type"].FillWeight = 11;
             _grid.Columns["addr"].FillWeight = 30;
@@ -309,7 +309,7 @@ namespace Win7Proxy
                 Dock = DockStyle.Fill,
                 Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(45, 125, 218),
-                Text = "当前节点：未选择",
+                Text = "Текущий узел: не выбран",
                 Padding = new Padding(2, 4, 2, 2)
             };
             layout.Controls.Add(_nodeLabel, 0, 1);
@@ -320,7 +320,7 @@ namespace Win7Proxy
                 Dock = DockStyle.Fill,
                 Font = new Font("Segoe UI", 9.5F),
                 ForeColor = Color.FromArgb(80, 84, 92),
-                Text = "状态：已停止",
+                Text = "Статус: остановлено",
                 Padding = new Padding(2, 2, 2, 6)
             };
             layout.Controls.Add(_status, 0, 3);
@@ -348,11 +348,11 @@ namespace Win7Proxy
                 Visible = true,
                 ContextMenuStrip = new ContextMenuStrip()
             };
-            _tray.ContextMenuStrip.Items.Add("显示主窗口", null, (s, e) => ShowForm());
-            _tray.ContextMenuStrip.Items.Add("启动", null, (s, e) => StartProxy(false));
-            _tray.ContextMenuStrip.Items.Add("停止", null, (s, e) => StopProxy());
+            _tray.ContextMenuStrip.Items.Add("Открыть окно", null, (s, e) => ShowForm());
+            _tray.ContextMenuStrip.Items.Add("Старт", null, (s, e) => StartProxy(false));
+            _tray.ContextMenuStrip.Items.Add("Стоп", null, (s, e) => StopProxy());
             _tray.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-            _tray.ContextMenuStrip.Items.Add("退出", null, (s, e) => RealExit());
+            _tray.ContextMenuStrip.Items.Add("Выход", null, (s, e) => RealExit());
             _tray.DoubleClick += (s, e) => ShowForm();
 
             FormClosing += (s, e) =>
@@ -391,9 +391,9 @@ namespace Win7Proxy
             // 上次异常退出可能留下一个没人管的 xray，先按 PID 文件回收掉
             SystemProxy.MixedPort = _state.MixedPort;
             var killed = CoreProcess.KillOrphan(PidFilePath());
-            if (killed > 0) AppendLog("已清理上次残留的内核进程。");
+            if (killed > 0) AppendLog("Завершён оставшийся с прошлого раза процесс ядра.");
             if (SystemProxy.Restore())
-                AppendLog("已恢复上次异常退出前的系统代理设置。");
+                AppendLog("Восстановлены настройки системного прокси после прошлого аварийного завершения.");
             UpdateLanButton();
 
             ProbeCoreVersionAsync();
@@ -401,7 +401,7 @@ namespace Win7Proxy
             if (_state.AutoConnect && _state.Mode != ProxyMode.Direct &&
                 _state.SelectedIndex >= 0 && _state.SelectedIndex < _state.Nodes.Count)
             {
-                AppendLog("自动连接已开启，正在用上次节点启动...");
+                AppendLog("Автоподключение включено, запуск с последним узлом...");
                 StartProxy(true);
             }
             else
@@ -416,37 +416,37 @@ namespace Win7Proxy
         {
             var menu = new MenuStrip { BackColor = Color.FromArgb(244, 246, 249) };
 
-            var mSub = new ToolStripMenuItem("订阅(&S)");
-            mSub.DropDownItems.Add("导入订阅(&I)...", null, (s, e) => ImportSubscription());
-            mSub.DropDownItems.Add("从剪贴板导入(&C)", null, (s, e) => ImportFromClipboard());
+            var mSub = new ToolStripMenuItem("Подписки (&S)");
+            mSub.DropDownItems.Add("Импорт подписки (&I)...", null, (s, e) => ImportSubscription());
+            mSub.DropDownItems.Add("Импорт из буфера (&C)", null, (s, e) => ImportFromClipboard());
             mSub.DropDownItems.Add(new ToolStripSeparator());
-            mSub.DropDownItems.Add("更新全部订阅(&U)", null, (s, e) => UpdateAllSubscriptions());
-            mSub.DropDownItems.Add("订阅管理(&M)...", null, (s, e) => OpenSubscriptionManager());
+            mSub.DropDownItems.Add("Обновить все подписки (&U)", null, (s, e) => UpdateAllSubscriptions());
+            mSub.DropDownItems.Add("Управление подписками (&M)...", null, (s, e) => OpenSubscriptionManager());
 
-            var mNode = new ToolStripMenuItem("节点(&N)");
-            mNode.DropDownItems.Add("添加节点(&A)...", null, (s, e) => AddNode());
-            mNode.DropDownItems.Add("复制原始链接(&L)", null, (s, e) => CopyRawLinks());
+            var mNode = new ToolStripMenuItem("Узлы (&N)");
+            mNode.DropDownItems.Add("Добавить узел (&A)...", null, (s, e) => AddNode());
+            mNode.DropDownItems.Add("Копировать ссылку (&L)", null, (s, e) => CopyRawLinks());
             mNode.DropDownItems.Add(new ToolStripSeparator());
-            mNode.DropDownItems.Add("去除重复节点(&D)", null, (s, e) => DedupeNodes());
-            mNode.DropDownItems.Add("清空延迟结果(&R)", null, (s, e) => ClearLatency());
+            mNode.DropDownItems.Add("Удалить дубликаты (&D)", null, (s, e) => DedupeNodes());
+            mNode.DropDownItems.Add("Сбросить пинг (&R)", null, (s, e) => ClearLatency());
 
-            var mOpt = new ToolStripMenuItem("设置(&O)");
-            _miAutoStart = new ToolStripMenuItem("开机自动启动") { CheckOnClick = true, Checked = _state.AutoStart };
+            var mOpt = new ToolStripMenuItem("Настройки (&O)");
+            _miAutoStart = new ToolStripMenuItem("Запускать вместе с Windows") { CheckOnClick = true, Checked = _state.AutoStart };
             _miAutoStart.CheckedChanged += (s, e) =>
             {
                 _state.AutoStart = _miAutoStart.Checked;
                 var exe = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Win7Proxy.exe");
                 SystemProxy.SetAutoStart(_miAutoStart.Checked, exe);
                 _state.Save();
-                AppendLog("开机自启：" + (_miAutoStart.Checked ? "已开启" : "已关闭"));
+                AppendLog("Автозапуск: " + (_miAutoStart.Checked ? "включён" : "выключен"));
             };
-            _miAutoConnect = new ToolStripMenuItem("启动时自动连接上次节点") { CheckOnClick = true, Checked = _state.AutoConnect };
+            _miAutoConnect = new ToolStripMenuItem("Автоподключение к последнему узлу при запуске") { CheckOnClick = true, Checked = _state.AutoConnect };
             _miAutoConnect.CheckedChanged += (s, e) =>
             {
                 _state.AutoConnect = _miAutoConnect.Checked;
                 _state.Save();
             };
-            _miDedupe = new ToolStripMenuItem("导入订阅时自动去重") { CheckOnClick = true, Checked = _state.DedupeOnImport };
+            _miDedupe = new ToolStripMenuItem("Удалять дубликаты при импорте подписок") { CheckOnClick = true, Checked = _state.DedupeOnImport };
             _miDedupe.CheckedChanged += (s, e) =>
             {
                 _state.DedupeOnImport = _miDedupe.Checked;
@@ -456,13 +456,13 @@ namespace Win7Proxy
             mOpt.DropDownItems.Add(_miAutoConnect);
             mOpt.DropDownItems.Add(_miDedupe);
 
-            var mHelp = new ToolStripMenuItem("帮助(&H)");
-            mHelp.DropDownItems.Add("打开程序目录", null, (s, e) => OpenFolder(AppDomain.CurrentDomain.BaseDirectory));
-            mHelp.DropDownItems.Add("打开配置目录", null, (s, e) => OpenFolder(
+            var mHelp = new ToolStripMenuItem("Справка (&H)");
+            mHelp.DropDownItems.Add("Открыть папку программы", null, (s, e) => OpenFolder(AppDomain.CurrentDomain.BaseDirectory));
+            mHelp.DropDownItems.Add("Открыть папку настроек", null, (s, e) => OpenFolder(
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Win7Proxy")));
             mHelp.DropDownItems.Add(new ToolStripSeparator());
-            mHelp.DropDownItems.Add("清空日志", null, (s, e) => { _log.Clear(); });
-            mHelp.DropDownItems.Add("关于", null, (s, e) => ShowAbout());
+            mHelp.DropDownItems.Add("Очистить журнал", null, (s, e) => { _log.Clear(); });
+            mHelp.DropDownItems.Add("О программе", null, (s, e) => ShowAbout());
 
             menu.Items.Add(mSub);
             menu.Items.Add(mNode);
@@ -475,11 +475,11 @@ namespace Win7Proxy
         {
             MessageBox.Show(
                 "Win7Proxy " + AppVersion + "\n\n" +
-                "Windows 7 上的代理客户端，支持 Xray / V2Ray / sing-box 三种内核。\n" +
-                "当前内核：" + CoreRegistry.Of(_state.Core).Name +
-                (string.IsNullOrEmpty(_coreVersion) ? "（未检测到）" : "  " + _coreVersion) +
-                "\n\n流量接管：系统代理指向本机内核端口，分流由 geoip/geosite 规则完成。",
-                "关于 Win7Proxy", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                "Прокси-клиент для Windows 7 с поддержкой ядер Xray / V2Ray / sing-box.\n" +
+                "Текущее ядро: " + CoreRegistry.Of(_state.Core).Name +
+                (string.IsNullOrEmpty(_coreVersion) ? " (не обнаружено)" : "  " + _coreVersion) +
+                "\n\nПерехват трафика: системный прокси направляется на локальный порт ядра, маршрутизация по правилам geoip/geosite.",
+                "О программе Win7Proxy", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private static void OpenFolder(string path)
@@ -525,7 +525,7 @@ namespace Win7Proxy
             if (_nodeLabel == null || _nodeLabel.IsDisposed) return;
             if (_nodeLabel.InvokeRequired) { _nodeLabel.BeginInvoke((Action)UpdateNodeLabel); return; }
             var n = SelectedNode();
-            _nodeLabel.Text = n != null ? "当前节点：" + n.Remarks : "当前节点：未选择";
+            _nodeLabel.Text = n != null ? "Текущий узел: " + n.Remarks : "Текущий узел: не выбран";
         }
 
         private void RefreshGrid()
@@ -621,7 +621,7 @@ namespace Win7Proxy
                 bool collapsed = _collapsedGroups.Contains(gid);
                 _rowToViewIndex.Add(-1);
                 _rowGroups.Add(gid);
-                _rowHeaders.Add((collapsed ? "▸ " : "▾ ") + GroupTitle(gid) + "（" + nodes.Count + "）");
+                _rowHeaders.Add((collapsed ? "▸ " : "▾ ") + GroupTitle(gid) + " (" + nodes.Count + ")");
                 if (collapsed) continue;
 
                 foreach (var n in nodes)
@@ -641,10 +641,10 @@ namespace Win7Proxy
 
         private string GroupTitle(string gid)
         {
-            if (gid == "") return "手动";
+            if (gid == "") return "Вручную";
             var sub = _state.FindSubscription(gid);
-            if (sub == null) return "(未知订阅)";
-            return string.IsNullOrEmpty(sub.Name) ? "(未命名)" : sub.Name;
+            if (sub == null) return "(неизвестная подписка)";
+            return string.IsNullOrEmpty(sub.Name) ? "(без имени)" : sub.Name;
         }
 
         private void ToggleGroupCollapse(int row)
@@ -665,13 +665,13 @@ namespace Win7Proxy
             {
                 var wanted = _filterSubscriptionId;
                 _subFilter.Items.Clear();
-                _subFilter.Items.Add(new GroupItem { Id = null, Text = "全部" });
+                _subFilter.Items.Add(new GroupItem { Id = null, Text = "Все" });
                 foreach (var s in _state.Subscriptions)
-                    _subFilter.Items.Add(new GroupItem { Id = s.Id, Text = string.IsNullOrEmpty(s.Name) ? "(未命名)" : s.Name });
+                    _subFilter.Items.Add(new GroupItem { Id = s.Id, Text = string.IsNullOrEmpty(s.Name) ? "(без имени)" : s.Name });
                 foreach (var n in _state.Nodes)
                     if (string.IsNullOrEmpty(n.SubscriptionId))
                     {
-                        _subFilter.Items.Add(new GroupItem { Id = "", Text = "手动" });
+                        _subFilter.Items.Add(new GroupItem { Id = "", Text = "Вручную" });
                         break;
                     }
 
@@ -733,12 +733,12 @@ namespace Win7Proxy
 
         private void UpdateStatus()
         {
-            var modeText = _state.Mode == ProxyMode.Global ? "全局" : (_state.Mode == ProxyMode.Rule ? "规则" : "直连");
+            var modeText = _state.Mode == ProxyMode.Global ? "Глобальный" : (_state.Mode == ProxyMode.Rule ? "Правила" : "Напрямую");
             if (_core != null && _currentNode != null)
-                SetStatus("状态：运行中（" + modeText + "） — " + _currentNode.Remarks);
+                SetStatus("Статус: работает (" + modeText + ") — " + _currentNode.Remarks);
             else
-                SetStatus("状态：已停止（" + modeText + "）" +
-                          (string.IsNullOrEmpty(_coreVersion) ? "" : "  ·  内核 " + _coreVersion));
+                SetStatus("Статус: остановлено (" + modeText + ")" +
+                          (string.IsNullOrEmpty(_coreVersion) ? "" : "  ·  Ядро " + _coreVersion));
         }
 
         private bool TryBeginBusy(string status)
@@ -772,7 +772,7 @@ namespace Win7Proxy
                 sub = dlg.CreateSubscription();
             }
 
-            if (!TryBeginBusy("状态：正在拉取订阅…")) return;
+            if (!TryBeginBusy("Статус: загрузка подписки…")) return;
             try
             {
                 await Task.Run(() => SubscriptionFetcher.Fetch(sub));
@@ -792,18 +792,18 @@ namespace Win7Proxy
                 if (_state.DedupeOnImport) SubscriptionManagerForm.Dedupe(_state);
                 _state.Save();
                 RefreshGrid();
-                MessageBox.Show("成功导入 " + count + " 个节点" +
-                                (existing != null ? "（已替换同 URL 的旧订阅）" : "") + "。",
-                    "完成", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                AppendLog("导入订阅「" + sub.Name + "」，" + count + " 个节点。");
+                MessageBox.Show("Импортировано: " + count + " узлов" +
+                                (existing != null ? " (заменена старая подписка с тем же URL)" : "") + ".",
+                    "Готово", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                AppendLog("Импортирована подписка «" + sub.Name + "», " + count + " узлов.");
             }
             catch (ProxyCoreException ex)
             {
-                MessageBox.Show("订阅拉取失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Не удалось загрузить подписку: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("订阅处理失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка обработки подписки: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally { EndBusy(); }
         }
@@ -820,12 +820,12 @@ namespace Win7Proxy
         {
             if (_state.Subscriptions.Count == 0)
             {
-                MessageBox.Show("还没有导入任何订阅。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Нет добавленных подписок.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            if (!TryBeginBusy("状态：正在更新订阅…")) return;
-            AppendLog("开始更新 " + _state.Subscriptions.Count + " 个订阅...");
+            if (!TryBeginBusy("Статус: обновление подписок…")) return;
+            AppendLog("Обновление " + _state.Subscriptions.Count + " подписок...");
             var ok = 0;
             var fail = new StringBuilder();
             var total = 0;
@@ -843,7 +843,7 @@ namespace Win7Proxy
                         }
                         catch (Exception ex)
                         {
-                            fail.AppendLine("  " + sub.Name + "：" + ex.Message);
+                            fail.AppendLine("  " + sub.Name + ": " + ex.Message);
                         }
                     }
                 });
@@ -853,17 +853,17 @@ namespace Win7Proxy
                 if (_state.DedupeOnImport) SubscriptionManagerForm.Dedupe(_state);
                 _state.Save();
                 RefreshGrid();
-                AppendLog("订阅更新完成：成功 " + ok + " 个，共 " + total + " 个节点。");
-                if (fail.Length > 0) AppendLog("失败的订阅：\n" + fail);
-                MessageBox.Show("更新完成：成功 " + ok + " 个订阅，共 " + total + " 个节点。" +
-                                (fail.Length > 0 ? "\n\n部分订阅失败，详见日志。" : ""),
-                    "更新订阅", MessageBoxButtons.OK,
+                AppendLog("Обновление подписок завершено: успешно — " + ok + ", всего " + total + " узлов.");
+                if (fail.Length > 0) AppendLog("Не удалось обновить:\n" + fail);
+                MessageBox.Show("Обновление завершено: успешно — " + ok + " подписок, всего " + total + " узлов." +
+                                (fail.Length > 0 ? "\n\nЧасть подписок не удалось обновить, подробности в журнале." : ""),
+                    "Обновить подписки", MessageBoxButtons.OK,
                     fail.Length > 0 ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                AppendLog("更新订阅失败：" + ex.Message);
-                MessageBox.Show("更新订阅失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AppendLog("Ошибка обновления подписок: " + ex.Message);
+                MessageBox.Show("Ошибка обновления подписок: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally { EndBusy(); }
         }
@@ -893,7 +893,7 @@ namespace Win7Proxy
             try { text = Clipboard.GetText(); } catch { }
             if (string.IsNullOrWhiteSpace(text))
             {
-                MessageBox.Show("剪贴板是空的，或无法读取。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Буфер обмена пуст или недоступен.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             ImportRawText(text);
@@ -908,7 +908,7 @@ namespace Win7Proxy
             var single = V2rayNParser.ParseLink(raw);
             if (single != null)
             {
-                single.SourceName = "手动";
+                single.SourceName = "Вручную";
                 _state.Nodes.Add(single);
                 added = 1;
             }
@@ -917,11 +917,11 @@ namespace Win7Proxy
                 var parser = SubscriptionParserFactory.Detect(raw);
                 if (parser == null)
                 {
-                    MessageBox.Show("剪贴板内容既不是可识别的单条链接，也不是 v2rayN / Clash / SIP008 订阅。",
-                        "无法识别", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("В буфере обмена нет распознаваемой ссылки или подписки v2rayN / Clash / SIP008.",
+                        "Не распознано", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                var sub = new Subscription { Name = "剪贴板导入", Url = "" };
+                var sub = new Subscription { Name = "Из буфера", Url = "" };
                 var nodes = parser.Parse(raw);
                 foreach (var n in nodes) { n.SourceName = sub.Name; n.SubscriptionId = ""; }
                 foreach (var n in nodes) _state.Nodes.Add(n);
@@ -935,21 +935,21 @@ namespace Win7Proxy
             }
             _state.Save();
             RefreshGrid();
-            AppendLog("从剪贴板导入 " + added + " 个节点。");
+            AppendLog("Импортировано из буфера: " + added + " узлов.");
             if (added > 0)
-                MessageBox.Show("已导入 " + added + " 个节点。", "完成", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Импортировано: " + added + " узлов.", "Готово", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void AddNode()
         {
-            using (var dlg = new InputDialog("添加节点", "粘贴单条链接 (vmess:// / vless:// / trojan:// / ss:// / hysteria2://)："))
+            using (var dlg = new InputDialog("Добавить узел", "Вставьте ссылку узла (vmess:// / vless:// / trojan:// / ss:// / hysteria2://):"))
             {
                 if (dlg.ShowDialog(this) != DialogResult.OK) return;
                 try
                 {
                     var node = V2rayNParser.ParseLink(dlg.Value.Trim());
-                    if (node == null) { MessageBox.Show("无法解析该链接。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
-                    node.SourceName = "手动";
+                    if (node == null) { MessageBox.Show("Не удалось распознать ссылку.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+                    node.SourceName = "Вручную";
                     node.SubscriptionId = "";
                     _state.Nodes.Add(node);
                     if (_state.DedupeOnImport) SubscriptionManagerForm.Dedupe(_state);
@@ -958,7 +958,7 @@ namespace Win7Proxy
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("解析失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ошибка разбора: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -966,7 +966,7 @@ namespace Win7Proxy
         private void CopyRawLinks()
         {
             var nodes = SelectedNodes();
-            if (nodes.Count == 0) { MessageBox.Show("请先选中要复制的节点。", "提示"); return; }
+            if (nodes.Count == 0) { MessageBox.Show("Сначала выберите узлы для копирования.", "Информация"); return; }
 
             var sb = new StringBuilder();
             var missing = 0;
@@ -978,12 +978,12 @@ namespace Win7Proxy
             }
             if (sb.Length == 0)
             {
-                MessageBox.Show("选中的节点没有保存原始链接（订阅更新后重新解析的节点才会有）。",
-                    "无法复制", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("У выбранных узлов нет исходной ссылки (она появляется после обновления подписки).",
+                    "Не удалось скопировать", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             try { Clipboard.SetText(sb.ToString()); } catch { }
-            AppendLog("已复制 " + (nodes.Count - missing) + " 条链接到剪贴板。");
+            AppendLog("Скопировано " + (nodes.Count - missing) + " ссылок в буфер обмена.");
         }
 
         private void DedupeNodes()
@@ -991,8 +991,8 @@ namespace Win7Proxy
             var removed = SubscriptionManagerForm.Dedupe(_state);
             _state.Save();
             RefreshGrid();
-            MessageBox.Show(removed > 0 ? "已去除 " + removed + " 个重复节点。" : "没有发现重复节点。",
-                "去重", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(removed > 0 ? "Удалено " + removed + " дубликатов." : "Дубликатов не найдено.",
+                "Дубликаты", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ClearLatency()
@@ -1022,8 +1022,8 @@ namespace Win7Proxy
                 // 只点了分组标题行时 SelectedNodes() 是空的，静默返回会让用户以为按钮坏了。
                 if (targets.Count == 0)
                 {
-                    MessageBox.Show("选中的是分组标题行，请选中具体节点再测试（点标题行是折叠/展开）。",
-                        "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Выбрана строка заголовка группы. Выберите конкретный узел (щелчок по заголовку сворачивает/разворачивает группу).",
+                        "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
             }
@@ -1053,8 +1053,8 @@ namespace Win7Proxy
                     _grid.Rows[i].Cells["latency"].Value = glyph0;
             }
             if (_spinTimer != null) _spinTimer.Start();
-            SetStatus("状态：延迟测试中…");
-            AppendLog("开始测试延迟（" + targets.Count + " 个节点）...");
+            SetStatus("Статус: проверка задержки…");
+            AppendLog("Проверка задержки (" + targets.Count + " узлов)...");
 
             ThreadPool.QueueUserWorkItem(_ =>
             {
@@ -1077,18 +1077,18 @@ namespace Win7Proxy
                     }
                     catch { }
                     n.LatencyMs = ms;
-                    SetLatencyCell(n, ms < 0 ? "超时" : ms + " ms");
+                    SetLatencyCell(n, ms < 0 ? "Тайм-аут" : ms + " ms");
                     lock (_testingLock) _testingNodes.Remove(n);
                 });
 
                 // QUIC 类节点：顺序做真实延迟测试（每个都要临时拉起一个内核，不能并发）
                 foreach (var n in quicTargets)
                 {
-                    AppendLog("真实延迟测试：" + n.Remarks + "（Hysteria2/QUIC）...");
+                    AppendLog("Реальная задержка: " + n.Remarks + " (Hysteria2/QUIC)...");
                     var coreDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CoreConstants.CoreDir);
                     int ms = RealLatencyTester.Test(_state.Core, n, coreDir, 8000, s => AppendLog("  " + s));
                     n.LatencyMs = ms;
-                    SetLatencyCell(n, ms < 0 ? "失败" : ms + " ms");
+                    SetLatencyCell(n, ms < 0 ? "Ошибка" : ms + " ms");
                     lock (_testingLock) _testingNodes.Remove(n);
                 }
 
@@ -1105,7 +1105,7 @@ namespace Win7Proxy
                         _state.Save();
                     }));
                 }
-                AppendLog("延迟测试完成。");
+                AppendLog("Проверка задержки завершена.");
             });
         }
 
@@ -1129,16 +1129,16 @@ namespace Win7Proxy
             var nodes = SelectedNodes();
             if (nodes.Count == 0)
             {
-                MessageBox.Show("请先选中要删除的节点（按住 Ctrl / Shift 可多选，或用「全选」）。",
-                    "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Выберите узлы для удаления (Ctrl / Shift для выбора нескольких или «Выбрать все»).",
+                    "Информация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (MessageBox.Show("确认删除选中的 " + nodes.Count + " 个节点？", "确认删除",
+            if (MessageBox.Show("Удалить выбранные узлы (" + nodes.Count + " узлов?", "Подтверждение удаления",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
             foreach (var n in nodes) _state.Nodes.Remove(n);
             _state.Save();
             RefreshGrid();
-            AppendLog("已删除 " + nodes.Count + " 个节点。");
+            AppendLog("Удалено: " + nodes.Count + " узлов.");
         }
 
         // ---------- 网络设置（mixed 端口 / 局域网） ----------
@@ -1146,7 +1146,7 @@ namespace Win7Proxy
         private void UpdateLanButton()
         {
             if (_lanBtn == null || _lanBtn.IsDisposed) return;
-            _lanBtn.Text = "局域网:" + (_state.AllowLan ? "开" : "关");
+            _lanBtn.Text = "LAN: " + (_state.AllowLan ? "Вкл" : "Выкл");
             _lanBtn.BackColor = _state.AllowLan ? Color.FromArgb(230, 160, 40) : Color.White;
             _lanBtn.ForeColor = _state.AllowLan ? Color.White : Color.FromArgb(40, 44, 52);
         }
@@ -1154,28 +1154,28 @@ namespace Win7Proxy
         private void ToggleLan()
         {
             if (!_state.AllowLan &&
-                MessageBox.Show("开启后，同一局域网内的其他设备可直接使用本机代理（无认证）。\n" +
-                                "请确认当前网络可信，否则可能被他人盗用。确定开启？",
-                    "允许局域网连接", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                MessageBox.Show("После включения другие устройства в локальной сети смогут использовать прокси этого ПК (без пароля).\n" +
+                                "Убедитесь, что текущая сеть безопасна. Включить доступ из локальной сети?",
+                    "Доступ из локальной сети", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
 
             _state.AllowLan = !_state.AllowLan;
             _state.Save();
             UpdateLanButton();
-            AppendLog("局域网访问：" + (_state.AllowLan ? "已开启（入站监听 0.0.0.0）" : "已关闭（仅本机可访问）"));
+            AppendLog("Доступ из LAN: " + (_state.AllowLan ? "включён (прослушивание 0.0.0.0)" : "выключен (только этот ПК)"));
             ApplyNetworkChange();
         }
 
         private void ChangePort()
         {
-            using (var dlg = new InputDialog("本地 mixed 端口",
-                "输入 1-65535 的端口号（HTTP 与 SOCKS 共用同一端口）：", _state.MixedPort.ToString()))
+            using (var dlg = new InputDialog("Локальный mixed-порт",
+                "Введите номер порта 1–65535 (общий для HTTP и SOCKS):", _state.MixedPort.ToString()))
             {
                 if (dlg.ShowDialog(this) != DialogResult.OK) return;
                 int port;
                 if (!int.TryParse(dlg.Value.Trim(), out port) || port < 1 || port > 65535)
                 {
-                    MessageBox.Show("端口必须是 1-65535 之间的整数。", "无效端口", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Порт должен быть целым числом от 1 до 65535.", "Неверный порт", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
                 if (port == _state.MixedPort) return;
@@ -1183,7 +1183,7 @@ namespace Win7Proxy
                 _state.MixedPort = port;
                 SystemProxy.MixedPort = port;
                 _state.Save();
-                AppendLog("本地 mixed 端口已改为 " + port + "。");
+                AppendLog("Локальный mixed-порт изменён на " + port + ".");
                 ApplyNetworkChange();
             }
         }
@@ -1192,7 +1192,7 @@ namespace Win7Proxy
         {
             if (_core != null && _currentNode != null)
             {
-                AppendLog("网络设置已更改，正在重启内核以生效...");
+                AppendLog("Настройки сети изменены, перезапуск ядра...");
                 StartProxy(true);
             }
             else
@@ -1212,14 +1212,14 @@ namespace Win7Proxy
         {
             if (_busy)
             {
-                if (!quiet) MessageBox.Show("正在执行后台操作，请稍候。", "提示",
+                if (!quiet) MessageBox.Show("Выполняется фоновая операция, подождите.", "Информация",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             var node = SelectedNode();
             if (node == null)
             {
-                if (!quiet) MessageBox.Show("请先在列表中选择一个节点。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (!quiet) MessageBox.Show("Сначала выберите узел в списке.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1231,8 +1231,8 @@ namespace Win7Proxy
                 SystemProxy.SetProxy(ProxyMode.Direct);
                 _currentNode = null;
                 UpdateStatus();
-                AppendLog("已切换到直连模式，未启动内核，并已恢复原系统代理设置。");
-                if (!quiet) MessageBox.Show("直连模式：本程序已停止接管系统代理，不会启动内核。", "直连模式",
+                AppendLog("Включён режим «Напрямую»: ядро не запускается, системный прокси восстановлен.");
+                if (!quiet) MessageBox.Show("Режим «Напрямую»: системный прокси отключён, ядро не запускается.", "Режим «Напрямую»",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -1240,19 +1240,19 @@ namespace Win7Proxy
             var spec = CoreRegistry.Of(_state.Core);
             if (!spec.Win7Usable && CoreRegistry.IsWindows7OrEarlier())
             {
-                var message = spec.Name + " 没有可在 Windows 7 上运行的官方构建，请使用 Xray 内核。";
-                AppendLog("无法启动：" + message);
-                if (!quiet) MessageBox.Show(message, "系统不兼容", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                var message = spec.Name + " не имеет официальной сборки для Windows 7, используйте ядро Xray.";
+                AppendLog("Невозможно запустить: " + message);
+                if (!quiet) MessageBox.Show(message, "Несовместимая система", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             var coreDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CoreConstants.CoreDir);
             var coreExe = Path.Combine(coreDir, spec.ExeName);
             if (!File.Exists(coreExe))
             {
-                if (quiet) { AppendLog("未找到 core/" + spec.ExeName + "，跳过自动启动。"); return; }
+                if (quiet) { AppendLog("Не найден core/" + spec.ExeName + ", автозапуск пропущен."); return; }
                 var ask = MessageBox.Show(
-                    "未找到 core\\" + spec.ExeName + "。\n\n现在下载并安装 " + spec.Name + " 内核吗？",
-                    "缺少内核", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    "Не найден файл core\\" + spec.ExeName + ".\n\nСкачать и установить ядро " + spec.Name + "?",
+                    "Отсутствует ядро", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (ask == DialogResult.Yes) DownloadCoreAsync(spec.Kind);
                 return;
             }
@@ -1262,10 +1262,10 @@ namespace Win7Proxy
             var unsupported = spec.ReasonUnsupported(node);
             if (unsupported != null)
             {
-                AppendLog("无法启动：" + unsupported);
+                AppendLog("Невозможно запустить: " + unsupported);
                 if (!quiet)
-                    MessageBox.Show(unsupported + "\n\n请在工具栏的「内核」下拉框里换一个内核，或者换一个节点。",
-                        "当前内核不支持该节点", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(unsupported + "\n\nВыберите другое ядро в списке «Ядро» на панели инструментов или выберите другой узел.",
+                        "Текущее ядро не поддерживает этот узел", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1279,19 +1279,19 @@ namespace Win7Proxy
                 // 已知的内核不兼容（比如 h2 传输在新版 xray 里已被移除）提前说清楚，
                 // 否则用户只会看到"内核启动失败"四个字，无从下手
                 foreach (var w in NodeCompat.Warnings(node, spec))
-                    AppendLog("兼容性提示：" + w);
+                    AppendLog("Совместимость: " + w);
 
                 // sing-box 没有 geo 数据时规则会退化，说清楚
                 if (spec.NeedsGeoDb && !CoreConfigFactory.HasSingboxGeo(coreDir))
-                    AppendLog("提示：缺少 sing-box 的 .srs 规则集，国内外分流会退化；请更新内核以补齐规则文件。");
+                    AppendLog("Примечание: отсутствуют наборы правил .srs для sing-box; обновите ядро для загрузки правил.");
 
                 StopCoreOnly();
 
                 // mixed 端口被占用就不能继续。只发警告会把其他程序的监听端口
                 // 误判成当前内核启动成功，随后错误接管系统代理。
                 if (CoreProcess.IsPortListening(_state.MixedPort, 300))
-                    throw new ProxyCoreException("本地端口 " + _state.MixedPort +
-                        " 已被其他程序占用，请先退出冲突的代理软件，或在工具栏「端口」里改一个端口。");
+                    throw new ProxyCoreException("Локальный порт " + _state.MixedPort +
+                        " уже занят другой программой. Закройте конфликтующий прокси или смените порт по кнопке «Порт...».");
 
                 var core = new CoreProcess();
                 core.LogReceived += s => AppendLog(s);
@@ -1313,14 +1313,14 @@ namespace Win7Proxy
 
                 if (!up)
                 {
-                    AppendLog("内核启动失败：本地入站端口未在 5 秒内全部就绪，请查看日志。");
+                    AppendLog("Ошибка запуска ядра: локальный порт не открылся за 5 секунд, проверьте журнал.");
                     StopCoreOnly();
                     SystemProxy.Restore();
                     _currentNode = null;
                     UpdateStatus();
                     if (!quiet)
-                        MessageBox.Show("内核没有成功启动，系统代理未被接管。请查看下方日志。",
-                            "启动失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Ядро не запустилось, системный прокси не изменён. Проверьте журнал ниже.",
+                            "Ошибка запуска", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -1329,26 +1329,26 @@ namespace Win7Proxy
                 lock (_coreLock)
                 {
                     if (!ReferenceEquals(core, _core) || !core.IsRunning)
-                        throw new ProxyCoreException("内核在启动完成前已经退出，请查看内核日志。");
+                        throw new ProxyCoreException("Ядро завершилось до окончания запуска, проверьте журнал.");
                     SystemProxy.MixedPort = _state.MixedPort;
                     SystemProxy.SetProxy(_state.Mode);
                     _currentNode = node;
                 }
                 UpdateStatus();
-                AppendLog("内核已启动：" + node.Remarks + "（" + _mode.Text + "模式）");
+                AppendLog("Ядро запущено: " + node.Remarks + " (" + _mode.Text + ")");
             }
             catch (ProxyCoreException ex)
             {
-                if (!quiet) MessageBox.Show(ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                AppendLog("启动失败：" + ex.Message);
+                if (!quiet) MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AppendLog("Ошибка запуска: " + ex.Message);
                 StopCoreOnly();
                 SystemProxy.Restore();
                 _currentNode = null;
             }
             catch (Exception ex)
             {
-                if (!quiet) MessageBox.Show(ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                AppendLog("启动失败：" + ex.Message);
+                if (!quiet) MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AppendLog("Ошибка запуска: " + ex.Message);
                 StopCoreOnly();
                 SystemProxy.Restore();
                 _currentNode = null;
@@ -1369,7 +1369,7 @@ namespace Win7Proxy
             // 否则用户会陷入"代理开着但没人干活"的断网状态。
             SystemProxy.Restore();
             UpdateStatus();
-            AppendLog("内核进程已退出，已恢复接管前的系统代理设置。");
+            AppendLog("Процесс ядра завершился, прежние настройки системного прокси восстановлены.");
         }
 
         private void StopCoreOnly()
@@ -1390,7 +1390,7 @@ namespace Win7Proxy
             SystemProxy.Restore();
             _currentNode = null;
             UpdateStatus();
-            AppendLog("已停止，已恢复接管前的系统代理设置。");
+            AppendLog("Остановлено, прежние настройки системного прокси восстановлены.");
         }
 
         private void ProbeCoreVersionAsync()
@@ -1405,8 +1405,8 @@ namespace Win7Proxy
                 {
                     UpdateStatus();
                     AppendLog(string.IsNullOrEmpty(v)
-                        ? "未检测到 " + spec.Name + " 内核（core\\" + spec.ExeName + "）。"
-                        : "检测到内核：" + spec.Name + " " + v);
+                        ? "Не обнаружено ядро " + spec.Name + " (core\\" + spec.ExeName + ")."
+                        : "Обнаружено ядро: " + spec.Name + " " + v);
                 }));
             });
         }
@@ -1418,15 +1418,15 @@ namespace Win7Proxy
             _state.Save();
 
             var spec = CoreRegistry.Of(_state.Core);
-            AppendLog("已切换内核：" + spec.Name + "（core\\" + spec.ExeName + "）");
+            AppendLog("Выбрано ядро: " + spec.Name + " (core\\" + spec.ExeName + ")");
             if (!spec.Win7Usable)
-                AppendLog("提示：" + spec.Name + " 没有 Windows 7 可用的构建，仅适用于 Windows 10/11。");
+                AppendLog("Примечание: " + spec.Name + " не имеет сборки для Windows 7 (только для Windows 10/11).");
 
             ProbeCoreVersionAsync();
 
             if (_core != null && _currentNode != null)
             {
-                AppendLog("正在用 " + spec.Name + " 重启...");
+                AppendLog("Перезапуск с ядром " + spec.Name + "...");
                 StartProxy(true);
             }
             else
@@ -1441,15 +1441,15 @@ namespace Win7Proxy
             var spec = CoreRegistry.Of(kind);
             if (!spec.Win7Usable && CoreRegistry.IsWindows7OrEarlier())
             {
-                MessageBox.Show(spec.Name + " 没有可在 Windows 7 上运行的官方构建，请使用 Xray 内核。",
-                    "系统不兼容", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(spec.Name + " не имеет официальной сборки для Windows 7, используйте ядро Xray.",
+                    "Несовместимая система", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (!TryBeginBusy("状态：正在下载内核…")) return;
+            if (!TryBeginBusy("Статус: загрузка ядра…")) return;
             var coreDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CoreConstants.CoreDir);
             var reconnect = restartAfter && _core != null && _currentNode != null;
             if (reconnect) StopProxy();
-            AppendLog("开始下载 " + spec.Name + " 内核，请稍候（日志会实时显示）...");
+            AppendLog("Загрузка ядра " + spec.Name + ", подождите (ход загрузки в журнале)...");
 
             var ok = false;
             try
@@ -1457,24 +1457,24 @@ namespace Win7Proxy
                 ok = await Task.Run(() => CoreDownloader.Install(kind, coreDir, AppendLog));
                 if (ok)
                 {
-                    AppendLog(spec.Name + " 内核安装完成。");
+                    AppendLog(spec.Name + ": установка ядра завершена.");
                     ProbeCoreVersionAsync();
                 }
                 else
                 {
-                    AppendLog(spec.Name + " 内核安装失败。可手动从 GitHub Releases 下载后把 "
-                              + spec.ExeName + " 放进 core\\ 目录。");
+                    AppendLog(spec.Name + ": установка не удалась. Скачайте вручную из GitHub Releases и поместите "
+                              + spec.ExeName + " в папку core\\.");
                 }
             }
             catch (Exception ex)
             {
-                AppendLog("下载内核时出错：" + ex.Message);
+                AppendLog("Ошибка при загрузке ядра: " + ex.Message);
             }
             finally { EndBusy(); }
 
             if (ok && reconnect)
             {
-                AppendLog("内核更新完成，正在重新连接...");
+                AppendLog("Ядро обновлено, переподключение...");
                 StartProxy(true);
             }
         }
@@ -1482,8 +1482,8 @@ namespace Win7Proxy
         private void UpdateCore()
         {
             var spec = CoreRegistry.Of(_state.Core);
-            var r = MessageBox.Show("将下载并覆盖当前的 " + spec.Name + " 内核（core\\" + spec.ExeName + "）。\n\n继续吗？",
-                "更新内核", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var r = MessageBox.Show("Будет скачано и перезаписано текущее ядро " + spec.Name + " (core\\" + spec.ExeName + ").\n\nПродолжить?",
+                "Обновить ядро", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (r != DialogResult.Yes) return;
             DownloadCoreAsync(spec.Kind, _core != null && _currentNode != null);
         }

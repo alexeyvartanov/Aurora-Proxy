@@ -31,7 +31,7 @@ namespace ProxyCore
             var exe = Path.Combine(coreDir, spec.ExeName);
             if (!File.Exists(exe))
             {
-                log("找不到内核 " + spec.ExeName + "，无法做真实延迟测试。");
+                log("Не найдено ядро " + spec.ExeName + ", проверка реальной задержки невозможна.");
                 return -1;
             }
 
@@ -68,7 +68,7 @@ namespace ProxyCore
                     }
                     if (!up)
                     {
-                        log("内核未在 15 秒内就绪（节点不可用，或内核版本过旧不支持该协议）。");
+                        log("Ядро не ответило за 15 секунд (узел недоступен или версия ядра не поддерживает протокол).");
                         return -1;
                     }
 
@@ -77,7 +77,7 @@ namespace ProxyCore
             }
             catch (Exception ex)
             {
-                log("真实延迟测试出错：" + ex.Message);
+                log("Ошибка проверки реальной задержки: " + ex.Message);
                 return -1;
             }
             finally
@@ -106,7 +106,7 @@ namespace ProxyCore
             }
             catch (Exception ex)
             {
-                log("请求未成功：" + ex.Message);
+                log("Запрос не выполнен: " + ex.Message);
                 return -1;
             }
         }

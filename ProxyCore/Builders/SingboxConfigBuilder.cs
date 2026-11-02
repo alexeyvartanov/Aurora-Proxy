@@ -15,7 +15,7 @@ namespace ProxyCore
         /// <param name="geoDbAvailable">core 目录下是否已放置规则模式需要的三个 .srs 文件。</param>
         public static string BuildJson(Node node, ProxyMode mode, bool geoDbAvailable, InboundOptions inbound)
         {
-            if (node == null) throw new ProxyCoreException("节点为空，无法生成配置。");
+            if (node == null) throw new ProxyCoreException("Узел пуст, невозможно создать конфигурацию.");
             inbound = inbound ?? InboundOptions.Default;
 
             var root = new JObject
@@ -118,7 +118,7 @@ namespace ProxyCore
                     break;
 
                 default:
-                    throw new ProxyCoreException("不支持的节点类型: " + n.Type);
+                    throw new ProxyCoreException("Неподдерживаемый тип узла: " + n.Type);
             }
 
             ob["server"] = n.Address;

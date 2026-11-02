@@ -18,8 +18,8 @@ namespace Win7Proxy
             public Subscription Sub;
             public override string ToString()
             {
-                var when = Sub.Updated == DateTime.MinValue ? "从未更新" : Sub.Updated.ToString("MM-dd HH:mm");
-                return string.Format("{0}  [{1} 个节点 · {2}]  {3}", Sub.Name, Sub.Nodes.Count, when, Sub.Url);
+                var when = Sub.Updated == DateTime.MinValue ? "не обновлялась" : Sub.Updated.ToString("MM-dd HH:mm");
+                return string.Format("{0}  [{1} узл. · {2}]  {3}", Sub.Name, Sub.Nodes.Count, when, Sub.Url);
             }
         }
 
@@ -35,7 +35,7 @@ namespace Win7Proxy
             _state = state;
             _onChanged = onChanged;
 
-            Text = "订阅管理";
+            Text = "Управление подписками";
             Width = 720; Height = 400;
             StartPosition = FormStartPosition.CenterParent;
             Font = new Font("Segoe UI", 9F);
@@ -51,11 +51,11 @@ namespace Win7Proxy
             Controls.Add(_list);
 
             int y = 314;
-            AddButton("新增", 12, y, 80, (s, e) => AddNew());
-            AddButton("更新", 100, y, 80, (s, e) => UpdateSelected());
-            AddButton("编辑", 188, y, 80, (s, e) => EditSelected());
-            AddButton("删除", 276, y, 80, (s, e) => DeleteSelected());
-            AddButton("关闭", 612, y, 80, (s, e) => Close());
+            AddButton("Добавить", 12, y, 80, (s, e) => AddNew());
+            AddButton("Обновить", 100, y, 80, (s, e) => UpdateSelected());
+            AddButton("Изменить", 188, y, 80, (s, e) => EditSelected());
+            AddButton("Удалить", 276, y, 80, (s, e) => DeleteSelected());
+            AddButton("Закрыть", 612, y, 80, (s, e) => Close());
 
             Reload();
 
@@ -130,18 +130,18 @@ namespace Win7Proxy
                     ApplyNodes(candidate);
                 }
                 changed = true;
-                MessageBox.Show("已导入 " + candidate.Nodes.Count + " 个节点" +
-                                (existing != null ? "（已替换同 URL 的旧订阅）" : "") + "。", "完成",
+                MessageBox.Show("Импортировано: " + candidate.Nodes.Count + " узлов" +
+                                (existing != null ? " (заменена старая подписка с тем же URL)" : "") + ".", "Готово",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (ProxyCore.ProxyCoreException ex)
             {
-                MessageBox.Show("订阅拉取失败：" + ex.Message, "错误",
+                MessageBox.Show("Не удалось загрузить подписку: " + ex.Message, "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("订阅处理失败：" + ex.Message, "错误",
+                MessageBox.Show("Ошибка обработки подписки: " + ex.Message, "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally { EndBusy(); }
@@ -152,7 +152,7 @@ namespace Win7Proxy
         private async void UpdateSelected()
         {
             var sub = Selected();
-            if (sub == null) { MessageBox.Show("请先选择一个订阅。", "提示"); return; }
+            if (sub == null) { MessageBox.Show("Сначала выберите подписку.", "Информация"); return; }
             if (!TryBeginBusy()) return;
             var candidate = CopyMetadata(sub);
             var changed = false;
@@ -161,16 +161,16 @@ namespace Win7Proxy
                 await Task.Run(() => ProxyCore.SubscriptionFetcher.Fetch(candidate));
                 ReplaceSubscription(sub, candidate);
                 changed = true;
-                MessageBox.Show("已更新，共 " + candidate.Nodes.Count + " 个节点。", "完成",
+                MessageBox.Show("Обновлено, всего " + candidate.Nodes.Count + " узлов.", "Готово",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (ProxyCore.ProxyCoreException ex)
             {
-                MessageBox.Show("更新失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка обновления: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("更新失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка обновления: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally { EndBusy(); }
             Reload();
@@ -180,7 +180,7 @@ namespace Win7Proxy
         private async void EditSelected()
         {
             var sub = Selected();
-            if (sub == null) { MessageBox.Show("请先选择一个订阅。", "提示"); return; }
+            if (sub == null) { MessageBox.Show("Сначала выберите подписку.", "Информация"); return; }
             Subscription candidate;
             using (var dlg = new SubscriptionForm(sub, true))
             {
@@ -195,16 +195,16 @@ namespace Win7Proxy
                 await Task.Run(() => ProxyCore.SubscriptionFetcher.Fetch(candidate));
                 ReplaceSubscription(sub, candidate);
                 changed = true;
-                MessageBox.Show("已保存并更新，共 " + candidate.Nodes.Count + " 个节点。", "完成",
+                MessageBox.Show("Сохранено и обновлено, всего " + candidate.Nodes.Count + " узлов.", "Готово",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (ProxyCore.ProxyCoreException ex)
             {
-                MessageBox.Show("保存失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка сохранения: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("保存失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка сохранения: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally { EndBusy(); }
             Reload();
@@ -214,9 +214,9 @@ namespace Win7Proxy
         private void DeleteSelected()
         {
             var sub = Selected();
-            if (sub == null) { MessageBox.Show("请先选择一个订阅。", "提示"); return; }
-            if (MessageBox.Show("删除订阅「" + sub.Name + "」以及它带来的 " + sub.Nodes.Count + " 个节点？",
-                    "确认删除", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+            if (sub == null) { MessageBox.Show("Сначала выберите подписку.", "Информация"); return; }
+            if (MessageBox.Show("Удалить подписку «" + sub.Name + "» и все её " + sub.Nodes.Count + " узлов?",
+                    "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
             RemoveNodesOf(sub.Id);
             _state.Subscriptions.Remove(sub);

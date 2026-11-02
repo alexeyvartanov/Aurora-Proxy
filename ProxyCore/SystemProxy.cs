@@ -58,7 +58,7 @@ namespace ProxyCore
                     using (var key = Registry.CurrentUser.OpenSubKey(RegPath, true))
                     {
                         if (key == null)
-                            throw new ProxyCoreException("无法打开 Windows 系统代理设置。");
+                            throw new ProxyCoreException("Не удалось открыть настройки системного прокси Windows.");
 
                         CaptureOriginalSettings(key);
                         RecordOwnedServer();
@@ -80,7 +80,7 @@ namespace ProxyCore
                 catch (Exception ex)
                 {
                     RestoreCapturedSettings(false);
-                    throw new ProxyCoreException("设置 Windows 系统代理失败：" + ex.Message);
+                    throw new ProxyCoreException("Не удалось настроить системный прокси Windows: " + ex.Message);
                 }
             }
         }
@@ -166,7 +166,7 @@ namespace ProxyCore
             {
                 using (var backup = Registry.CurrentUser.CreateSubKey(BackupPath))
                 {
-                    if (backup == null) throw new InvalidOperationException("无法创建代理设置备份。");
+                    if (backup == null) throw new InvalidOperationException("Не удалось создать резервную копию настроек прокси.");
                     CaptureValue(key, backup, "ProxyEnable");
                     CaptureValue(key, backup, "ProxyServer");
                     CaptureValue(key, backup, "ProxyOverride");

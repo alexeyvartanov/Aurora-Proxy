@@ -31,38 +31,38 @@ namespace ProxyCore
                 foreach (var s in CoreRegistry.All)
                     if (s.SupportsNetwork(net)) alt.Add(s.Name);
 
-                list.Add(spec.Name + " 不支持 " + net + " 传输，内核会拒绝启动"
-                    + (alt.Count > 0 ? "（" + string.Join(" / ", alt.ToArray()) + " 仍支持）" : "") + "。");
+                list.Add(spec.Name + " не поддерживает транспорт " + net + ", ядро не запустится"
+                    + (alt.Count > 0 ? " (" + string.Join(" / ", alt.ToArray()) + " поддерживают)" : "") + ".");
             }
 
             if (n.Type == NodeType.Hysteria2 && !spec.Hysteria2)
-                list.Add(spec.Name + " 不支持 Hysteria2，内核会拒绝启动（Xray 与 sing-box 支持）。");
+                list.Add(spec.Name + " не поддерживает Hysteria2, ядро не запустится (поддерживается в Xray и sing-box).");
 
             if (n.Type == NodeType.Shadowsocks)
             {
                 var plugin = SsPluginParser.Parse(n.Extra);
                 if (plugin != null && plugin.IsV2rayPlugin && spec.Kind != CoreKind.Singbox)
-                    list.Add("Shadowsocks v2ray-plugin 已等价映射为 WebSocket 传输"
-                        + (plugin.Tls ? "（TLS）" : "") + "；Xray/V2Ray 本身没有 SIP003 插件字段。");
+                    list.Add("Shadowsocks v2ray-plugin сопоставлен с транспортом WebSocket"
+                        + (plugin.Tls ? " (TLS)" : "") + "; в Xray/V2Ray нет отдельного поля плагина SIP003.");
             }
 
             if (n.AllowInsecure && spec.Kind == CoreKind.Xray &&
                 NetUtil.NormalizeCertPin(n.PinnedCertSha256) == "")
-                list.Add("Xray 已移除 allowInsecure（跳过证书校验），将改用严格校验；"
-                    + "自签名服务器请提供 pinSHA256，或改用 sing-box。");
+                list.Add("В Xray удалён параметр allowInsecure (пропуск проверки сертификата), будет использована строгая проверка; "
+                    + "Для самоподписанного сертификата укажите pinSHA256 или используйте sing-box.");
 
             if (!string.IsNullOrEmpty(n.PinnedCertSha256) && spec.Kind == CoreKind.Singbox)
-                list.Add("sing-box 只支持证书公钥 pin，无法识别 hysteria2 的证书指纹 pinSHA256，该参数将被忽略。");
+                list.Add("sing-box поддерживает только pin публичного ключа и не распознаёт отпечаток сертификата pinSHA256 для hysteria2; параметр будет пропущен.");
 
             if (n.Type == NodeType.Vmess && !string.IsNullOrEmpty(n.Security) &&
                 (n.Security == "none" || n.Security == "zero"))
-                list.Add("该 vmess 节点未启用加密（" + n.Security + "），流量特征明显且已被多数内核标记为不推荐。");
+                list.Add("У этого узла vmess отключено шифрование (" + n.Security + "), трафик легко распознаётся и не рекомендуется большинством ядер.");
 
             if (string.IsNullOrEmpty(n.Address))
-                list.Add("节点没有地址（Address 为空），无法生成可用配置。");
+                list.Add("У узла не указан адрес (Address пуст), невозможно создать конфигурацию.");
 
             if (n.Port <= 0 || n.Port > 65535)
-                list.Add("节点端口不合法：" + n.Port);
+                list.Add("Некорректный порт узла: " + n.Port);
 
             return list;
         }

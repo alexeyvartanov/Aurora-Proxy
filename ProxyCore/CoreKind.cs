@@ -56,20 +56,20 @@ namespace ProxyCore
         /// </summary>
         public string ReasonUnsupported(Node n)
         {
-            if (n == null) return "节点为空。";
-            if (string.IsNullOrWhiteSpace(n.Address)) return "节点地址为空。";
-            if (n.Port <= 0 || n.Port > 65535) return "节点端口不合法：" + n.Port + "。";
+            if (n == null) return "Узел пуст.";
+            if (string.IsNullOrWhiteSpace(n.Address)) return "Адрес узла пуст.";
+            if (n.Port <= 0 || n.Port > 65535) return "Некорректный порт узла: " + n.Port + ".";
 
             if ((n.Type == NodeType.Vmess || n.Type == NodeType.Vless) && string.IsNullOrWhiteSpace(n.UUID))
-                return n.Type + " 节点缺少 UUID。";
+                return n.Type + ": у узла отсутствует UUID.";
             if (n.Type == NodeType.Trojan && string.IsNullOrEmpty(n.Password))
-                return "Trojan 节点缺少密码。";
+                return "У узла Trojan отсутствует пароль.";
             if (n.Type == NodeType.Shadowsocks)
             {
-                if (string.IsNullOrWhiteSpace(n.EncryptMethod)) return "Shadowsocks 节点缺少加密方法。";
-                if (string.IsNullOrEmpty(n.Password)) return "Shadowsocks 节点缺少密码。";
+                if (string.IsNullOrWhiteSpace(n.EncryptMethod)) return "У узла Shadowsocks не указан метод шифрования.";
+                if (string.IsNullOrEmpty(n.Password)) return "У узла Shadowsocks отсутствует пароль.";
                 if (Kind == CoreKind.V2ray && n.EncryptMethod.StartsWith("2022-", StringComparison.OrdinalIgnoreCase))
-                    return "V2Ray 不支持 SS2022 加密，请换用 Xray 或 sing-box。";
+                    return "V2Ray не поддерживает шифрование SS2022, используйте Xray или sing-box.";
 
                 // SIP003 插件：sing-box 原生支持 obfs-local / v2ray-plugin；
                 // Xray/V2Ray 没有插件字段，只有 v2ray-plugin 的 websocket 模式能等价映射。
@@ -79,16 +79,16 @@ namespace ProxyCore
                     if (Kind == CoreKind.Singbox)
                     {
                         if (!plugin.IsObfs && !plugin.IsV2rayPlugin)
-                            return "sing-box 不支持的 Shadowsocks 插件：" + plugin.Name + "（仅支持 obfs-local 与 v2ray-plugin）。";
+                            return "Неподдерживаемый плагин Shadowsocks для sing-box: " + plugin.Name + " (поддерживаются только obfs-local и v2ray-plugin).";
                     }
                     else
                     {
                         if (plugin.IsObfs)
-                            return "Xray/V2Ray 不支持 simple-obfs（" + plugin.Name + "）混淆插件，请切换到 sing-box 内核，或改用不带插件的节点。";
+                            return "Xray/V2Ray не поддерживает плагин обфускации simple-obfs (" + plugin.Name + "), переключитесь на ядро sing-box или используйте узел без плагина.";
                         if (!plugin.IsV2rayPlugin)
-                            return "Xray/V2Ray 不支持的 Shadowsocks 插件：" + plugin.Name + "。";
+                            return "Неподдерживаемый плагин Shadowsocks для Xray/V2Ray: " + plugin.Name + ".";
                         if (!plugin.IsWebsocketV2rayPlugin)
-                            return "Xray/V2Ray 只能表达 v2ray-plugin 的 websocket 模式，当前模式为 " + plugin.Mode + "，请改用 sing-box。";
+                            return "Xray/V2Ray поддерживает v2ray-plugin только в режиме websocket, текущий режим: " + plugin.Mode + ", используйте sing-box.";
                     }
                 }
             }
@@ -96,9 +96,9 @@ namespace ProxyCore
             if (n.Type == NodeType.Hysteria2)
             {
                 if (!Hysteria2)
-                    return Name + " 不支持 Hysteria2，请切换到 Xray 或 sing-box 内核。";
+                    return Name + " не поддерживает Hysteria2, переключитесь на ядро Xray или sing-box.";
                 if (string.IsNullOrEmpty(n.Password))
-                    return "Hysteria2 节点缺少密码。";
+                    return "У узла Hysteria2 отсутствует пароль.";
                 return null; // Hysteria2 自带 QUIC 传输，不走 v2ray 的 network 概念
             }
 
@@ -106,19 +106,19 @@ namespace ProxyCore
             if (!SupportsNetwork(net))
             {
                 var alt = "";
-                if (net == "h2") alt = "（可切换到 V2Ray 或 sing-box，它们仍支持 h2）";
-                else if (net == "kcp") alt = "（可切换到 V2Ray）";
-                return string.Format("{0} 不支持 {1} 传输{2}。", Name, net, alt);
+                if (net == "h2") alt = " (переключитесь на V2Ray или sing-box, они поддерживают h2)";
+                else if (net == "kcp") alt = " (переключитесь на V2Ray)";
+                return string.Format("{0} не поддерживает транспорт {1}{2}.", Name, net, alt);
             }
 
             if (NetUtil.NormalizeSecurity(n.Extra != null && n.Extra.ContainsKey("security") ? n.Extra["security"] : "") == "reality")
             {
-                if (string.IsNullOrWhiteSpace(n.PublicKey)) return "REALITY 节点缺少公钥。";
-                if (!Reality) return Name + " 不支持 REALITY，请换用 Xray 或 sing-box。";
+                if (string.IsNullOrWhiteSpace(n.PublicKey)) return "У узла REALITY отсутствует публичный ключ.";
+                if (!Reality) return Name + " не поддерживает REALITY, используйте Xray или sing-box.";
             }
 
             if (!XtlsFlow && !string.IsNullOrEmpty(n.Flow))
-                return Name + " 不支持 XTLS flow（" + n.Flow + "），请换用 Xray 或去掉 flow 参数。";
+                return Name + " не поддерживает XTLS flow (" + n.Flow + "), используйте Xray или уберите параметр flow.";
 
             return null;
         }

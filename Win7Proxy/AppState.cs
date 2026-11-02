@@ -73,7 +73,7 @@ namespace Win7Proxy
                 {
                     var state = ReadState(backup);
                     Normalize(state);
-                    state.LoadWarning = "主配置文件损坏，已从 app.json.bak 恢复。";
+                    state.LoadWarning = "Основной файл конфигурации повреждён и восстановлен из app.json.bak.";
                     return state;
                 }
             }
@@ -82,7 +82,7 @@ namespace Win7Proxy
             if (mainError != null)
             {
                 var empty = new AppState();
-                empty.LoadWarning = "配置文件读取失败：" + mainError.Message;
+                empty.LoadWarning = "Ошибка чтения файла настроек: " + mainError.Message;
                 return empty;
             }
             return new AppState();
@@ -125,7 +125,7 @@ namespace Win7Proxy
                 }
                 catch (Exception ex)
                 {
-                    LastSaveError = "配置保存失败：" + ex.Message;
+                    LastSaveError = "Ошибка сохранения настроек: " + ex.Message;
                     try { if (File.Exists(temp)) File.Delete(temp); } catch { }
                     try { PersistenceError?.Invoke(LastSaveError); } catch { }
                     return false;
@@ -136,7 +136,7 @@ namespace Win7Proxy
         private static AppState ReadState(string path)
         {
             var state = JsonConvert.DeserializeObject<AppState>(File.ReadAllText(path));
-            if (state == null) throw new InvalidDataException("配置内容为空。");
+            if (state == null) throw new InvalidDataException("Содержимое конфигурации пусто.");
             return state;
         }
 

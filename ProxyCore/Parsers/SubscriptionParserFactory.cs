@@ -32,7 +32,7 @@ namespace ProxyCore.Parsers
             else parser = Detect(raw);
 
             if (parser == null)
-                throw new ProxyCoreException("无法识别订阅格式：既不是 v2rayN/Clash/SIP008。");
+                throw new ProxyCoreException("Не удалось распознать формат подписки (ожидается v2rayN / Clash / SIP008).");
 
             var nodes = parser.Parse(raw);
             foreach (var n in nodes)

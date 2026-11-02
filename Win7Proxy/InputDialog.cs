@@ -20,8 +20,8 @@ namespace Win7Proxy
 
             var lbl = new Label { Left = 12, Top = 14, Width = 480, Text = prompt };
             _box = new TextBox { Left = 12, Top = 40, Width = 480, Text = defaultValue ?? "" };
-            var ok = new Button { Text = "确定", Left = 320, Top = 86, DialogResult = DialogResult.OK };
-            var cancel = new Button { Text = "取消", Left = 410, Top = 86, DialogResult = DialogResult.Cancel };
+            var ok = new Button { Text = "ОК", Left = 320, Top = 86, DialogResult = DialogResult.OK };
+            var cancel = new Button { Text = "Отмена", Left = 410, Top = 86, DialogResult = DialogResult.Cancel };
 
             Controls.Add(lbl); Controls.Add(_box); Controls.Add(ok); Controls.Add(cancel);
             AcceptButton = ok; CancelButton = cancel;

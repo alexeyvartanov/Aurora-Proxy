@@ -236,11 +236,11 @@ namespace ProxyCore.Tests
         {
             var n = H2Node();
             n.Address = "";
-            Assert.Contains("地址", CoreRegistry.V2ray.ReasonUnsupported(n));
+            Assert.Contains("Адрес", CoreRegistry.V2ray.ReasonUnsupported(n));
 
             n = H2Node();
             n.Port = 70000;
-            Assert.Contains("端口", CoreRegistry.V2ray.ReasonUnsupported(n));
+            Assert.Contains("порт", CoreRegistry.V2ray.ReasonUnsupported(n));
 
             n = H2Node();
             n.UUID = "";
@@ -249,7 +249,7 @@ namespace ProxyCore.Tests
             n = RealityVless();
             n.Flow = "";
             n.PublicKey = "";
-            Assert.Contains("公钥", CoreRegistry.Singbox.ReasonUnsupported(n));
+            Assert.Contains("публичный ключ", CoreRegistry.Singbox.ReasonUnsupported(n));
         }
 
         // ---------- Hysteria2 ----------
@@ -284,7 +284,7 @@ namespace ProxyCore.Tests
 
             // 缺密码也要拦下
             n.Password = "";
-            Assert.Contains("密码", CoreRegistry.Singbox.ReasonUnsupported(n));
+            Assert.Contains("пароль", CoreRegistry.Singbox.ReasonUnsupported(n));
         }
 
         [Fact]

@@ -28,7 +28,7 @@ namespace ProxyCore
         public void Start(string coreExe, string configPath, string workDir, string pidFile = null)
         {
             if (!File.Exists(coreExe))
-                throw new ProxyCoreException("找不到内核文件：" + coreExe);
+                throw new ProxyCoreException("Файл ядра не найден: " + coreExe);
 
             _pidFile = pidFile;
 
@@ -51,7 +51,7 @@ namespace ProxyCore
             _proc.Exited += (s, e) => { DeletePidFile(); Exited?.Invoke(); };
 
             if (!_proc.Start())
-                throw new ProxyCoreException("启动内核进程失败。");
+                throw new ProxyCoreException("Не удалось запустить процесс ядра.");
             _proc.BeginOutputReadLine();
             _proc.BeginErrorReadLine();
 
